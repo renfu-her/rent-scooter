@@ -1,8 +1,9 @@
-from flask import render_template, request, redirect, url_for, flash, send_from_directory, current_app
-from app.views.admin.banners import admin_banners_bp
+from flask import Blueprint, render_template, request, redirect, url_for, flash, send_from_directory, current_app
 from app.controllers.banner_controller import BannerController
 from app.utils.decorators import admin_required
 from app.utils.image_processor import save_uploaded_image, allowed_file
+
+admin_banners_bp = Blueprint('admin_banners', __name__)
 
 
 @admin_banners_bp.route('')

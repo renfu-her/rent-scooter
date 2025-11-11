@@ -1,8 +1,9 @@
-from flask import jsonify, request
+from flask import Blueprint, jsonify, request
 from datetime import datetime
-from app.views.api.orders import api_orders_bp
 from app.controllers.order_controller import OrderController
 from app.utils.decorators import login_required
+
+api_orders_bp = Blueprint('api_orders', __name__)
 
 
 @api_orders_bp.route('', methods=['GET'])

@@ -1,7 +1,8 @@
-from flask import jsonify, request
-from app.views.api.motorcycles import api_motorcycles_bp
+from flask import Blueprint, jsonify, request
 from app.controllers.motorcycle_controller import MotorcycleController
 from app.utils.decorators import login_required
+
+api_motorcycles_bp = Blueprint('api_motorcycles', __name__)
 
 
 @api_motorcycles_bp.route('', methods=['GET'])

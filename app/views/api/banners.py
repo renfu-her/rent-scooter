@@ -1,7 +1,8 @@
-from flask import jsonify, request
-from app.views.api.banners import api_banners_bp
+from flask import Blueprint, jsonify, request
 from app.controllers.banner_controller import BannerController
 from app.utils.decorators import login_required
+
+api_banners_bp = Blueprint('api_banners', __name__)
 
 
 @api_banners_bp.route('', methods=['GET'])

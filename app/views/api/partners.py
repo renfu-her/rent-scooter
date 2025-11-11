@@ -1,7 +1,8 @@
-from flask import jsonify, request
-from app.views.api.partners import api_partners_bp
+from flask import Blueprint, jsonify, request
 from app.controllers.partner_controller import PartnerController
 from app.utils.decorators import login_required
+
+api_partners_bp = Blueprint('api_partners', __name__)
 
 
 @api_partners_bp.route('', methods=['GET'])

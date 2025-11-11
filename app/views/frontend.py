@@ -1,5 +1,6 @@
-from flask import render_template, redirect, url_for
-from app.views.frontend import frontend_bp
+from flask import Blueprint, render_template, redirect, url_for
+
+frontend_bp = Blueprint('frontend', __name__)
 
 
 @frontend_bp.route('/')

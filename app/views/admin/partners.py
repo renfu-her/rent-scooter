@@ -1,7 +1,8 @@
-from flask import render_template, request, redirect, url_for, flash
-from app.views.admin.partners import admin_partners_bp
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.controllers.partner_controller import PartnerController
 from app.utils.decorators import admin_required
+
+admin_partners_bp = Blueprint('admin_partners', __name__)
 
 
 @admin_partners_bp.route('')

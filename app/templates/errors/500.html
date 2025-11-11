@@ -1,0 +1,17 @@
+{% extends "app.html" %}
+
+{% block title %}500 - 伺服器錯誤{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 60px 20px;">
+    <h1 style="font-size: 72px; color: #e74c3c; margin-bottom: 20px;">500</h1>
+    <h2 style="font-size: 32px; color: #333; margin-bottom: 20px;">伺服器錯誤</h2>
+    <p style="font-size: 18px; color: #666; margin-bottom: 30px;">
+        抱歉，伺服器發生錯誤。我們正在處理這個問題。
+    </p>
+    <a href="{{ url_for('frontend.index') }}" style="display: inline-block; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px;">
+        返回首頁
+    </a>
+</div>
+{% endblock %}
+

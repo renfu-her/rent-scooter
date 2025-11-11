@@ -1,10 +1,11 @@
-from flask import render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from datetime import datetime
-from app.views.admin.orders import admin_orders_bp
 from app.controllers.order_controller import OrderController
 from app.controllers.partner_controller import PartnerController
 from app.controllers.motorcycle_controller import MotorcycleController
 from app.utils.decorators import store_admin_required
+
+admin_orders_bp = Blueprint('admin_orders', __name__)
 
 
 @admin_orders_bp.route('')

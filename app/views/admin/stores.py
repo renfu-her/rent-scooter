@@ -1,7 +1,8 @@
-from flask import render_template, request, redirect, url_for, flash
-from app.views.admin.stores import admin_stores_bp
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.controllers.store_controller import StoreController
 from app.utils.decorators import admin_required
+
+admin_stores_bp = Blueprint('admin_stores', __name__)
 
 
 @admin_stores_bp.route('')

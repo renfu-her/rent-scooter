@@ -1,16 +1,9 @@
-{% extends "app.html" %}
+{% extends "admin/base.html" %}
 
-{% block title %}訂單詳情 - 管理後台{% endblock %}
+{% block admin_title %}訂單詳情 - 管理後台{% endblock %}
 
-{% block extra_css %}
+{% block admin_extra_css %}
 <style>
-    .admin-container {
-        background: white;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        max-width: 800px;
-    }
     .detail-group {
         margin-bottom: 20px;
         padding-bottom: 20px;
@@ -31,20 +24,10 @@
         border-radius: 5px;
         margin-top: 20px;
     }
-    .btn {
-        padding: 10px 20px;
-        background: #95a5a6;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        display: inline-block;
-        margin-top: 20px;
-    }
 </style>
 {% endblock %}
 
-{% block content %}
-<div class="admin-container">
+{% block admin_content %}
     <h1>訂單詳情</h1>
     
     <div class="detail-group">
@@ -158,6 +141,4 @@
     {% endif %}
     
     <a href="{{ url_for('admin_orders.index') }}" class="btn">返回列表</a>
-</div>
 {% endblock %}
-

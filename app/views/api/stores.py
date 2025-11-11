@@ -1,7 +1,8 @@
-from flask import jsonify, request
-from app.views.api.stores import api_stores_bp
+from flask import Blueprint, jsonify, request
 from app.controllers.store_controller import StoreController
 from app.utils.decorators import login_required
+
+api_stores_bp = Blueprint('api_stores', __name__)
 
 
 @api_stores_bp.route('', methods=['GET'])

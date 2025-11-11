@@ -1,0 +1,22 @@
+{% extends "app.html" %}
+
+{% block title %}403 - 權限不足{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 60px 20px;">
+    <h1 style="font-size: 72px; color: #f39c12; margin-bottom: 20px;">403</h1>
+    <h2 style="font-size: 32px; color: #333; margin-bottom: 20px;">權限不足</h2>
+    <p style="font-size: 18px; color: #666; margin-bottom: 30px;">
+        抱歉，您沒有權限訪問此頁面。
+    </p>
+    {% if not current_user.is_authenticated %}
+    <a href="{{ url_for('auth.login') }}" style="display: inline-block; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin-right: 10px;">
+        登入
+    </a>
+    {% endif %}
+    <a href="{{ url_for('frontend.index') }}" style="display: inline-block; padding: 12px 30px; background: #95a5a6; color: white; text-decoration: none; border-radius: 5px;">
+        返回首頁
+    </a>
+</div>
+{% endblock %}
+

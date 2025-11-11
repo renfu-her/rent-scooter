@@ -26,6 +26,7 @@ def create_app(config_class=Config):
     # Register blueprints
     from app.views.auth import auth_bp
     from app.views.frontend import frontend_bp
+    from app.views.backend import backend_bp
     from app.views.admin.partners import admin_partners_bp
     from app.views.admin.stores import admin_stores_bp
     from app.views.admin.motorcycles import admin_motorcycles_bp
@@ -39,16 +40,21 @@ def create_app(config_class=Config):
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(frontend_bp)
-    app.register_blueprint(admin_partners_bp, url_prefix='/admin/partners')
-    app.register_blueprint(admin_stores_bp, url_prefix='/admin/stores')
-    app.register_blueprint(admin_motorcycles_bp, url_prefix='/admin/motorcycles')
-    app.register_blueprint(admin_orders_bp, url_prefix='/admin/orders')
-    app.register_blueprint(admin_banners_bp, url_prefix='/admin/banners')
+    app.register_blueprint(backend_bp, url_prefix='/backend')
+    app.register_blueprint(admin_partners_bp, url_prefix='/backend/partners')
+    app.register_blueprint(admin_stores_bp, url_prefix='/backend/stores')
+    app.register_blueprint(admin_motorcycles_bp, url_prefix='/backend/motorcycles')
+    app.register_blueprint(admin_orders_bp, url_prefix='/backend/orders')
+    app.register_blueprint(admin_banners_bp, url_prefix='/backend/banners')
     app.register_blueprint(api_partners_bp, url_prefix='/api/partners')
     app.register_blueprint(api_stores_bp, url_prefix='/api/stores')
     app.register_blueprint(api_motorcycles_bp, url_prefix='/api/motorcycles')
     app.register_blueprint(api_orders_bp, url_prefix='/api/orders')
     app.register_blueprint(api_banners_bp, url_prefix='/api/banners')
+    
+    # Register error handlers
+    from app.utils.error_handlers import register_error_handlers
+    register_error_handlers(app)
     
     return app
 

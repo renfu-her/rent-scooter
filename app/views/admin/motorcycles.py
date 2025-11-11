@@ -1,9 +1,10 @@
-from flask import render_template, request, redirect, url_for, flash, send_from_directory, current_app
-from app.views.admin.motorcycles import admin_motorcycles_bp
+from flask import Blueprint, render_template, request, redirect, url_for, flash, send_from_directory, current_app
 from app.controllers.motorcycle_controller import MotorcycleController
 from app.controllers.store_controller import StoreController
 from app.utils.decorators import store_admin_required
 from app.utils.image_processor import save_uploaded_image, allowed_file
+
+admin_motorcycles_bp = Blueprint('admin_motorcycles', __name__)
 
 
 @admin_motorcycles_bp.route('')
