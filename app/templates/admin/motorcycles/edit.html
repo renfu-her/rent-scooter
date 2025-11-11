@@ -1,0 +1,114 @@
+{% extends "app.html" %}
+
+{% block title %}編輯機車 - 管理後台{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-width: 600px;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+    }
+    input[type="text"],
+    input[type="file"],
+    select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    .btn {
+        padding: 10px 20px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-secondary {
+        background: #95a5a6;
+    }
+    .current-image {
+        margin-top: 10px;
+    }
+    .current-image img {
+        max-width: 200px;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>編輯機車</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="store_id">所屬商店 *</label>
+            <select id="store_id" name="store_id" required>
+                {% for store in stores %}
+                <option value="{{ store.id }}" {% if motorcycle.store_id == store.id %}selected{% endif %}>{{ store.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="license_plate">車牌號碼 *</label>
+            <input type="text" id="license_plate" name="license_plate" value="{{ motorcycle.license_plate }}" required>
+        </div>
+        <div class="form-group">
+            <label for="model">機車型號 *</label>
+            <input type="text" id="model" name="model" value="{{ motorcycle.model }}" required>
+        </div>
+        <div class="form-group">
+            <label for="color">顏色</label>
+            <select id="color" name="color">
+                <option value="">選擇顏色</option>
+                <option value="黑" {% if motorcycle.color == '黑' %}selected{% endif %}>黑</option>
+                <option value="白" {% if motorcycle.color == '白' %}selected{% endif %}>白</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="vehicle_type">車款類型 *</label>
+            <select id="vehicle_type" name="vehicle_type" required>
+                <option value="白牌" {% if motorcycle.vehicle_type == '白牌' %}selected{% endif %}>白牌</option>
+                <option value="綠牌" {% if motorcycle.vehicle_type == '綠牌' %}selected{% endif %}>綠牌</option>
+                <option value="電輔車" {% if motorcycle.vehicle_type == '電輔車' %}selected{% endif %}>電輔車</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="status">狀態 *</label>
+            <select id="status" name="status" required>
+                <option value="待出租" {% if motorcycle.status == '待出租' %}selected{% endif %}>待出租</option>
+                <option value="出租中" {% if motorcycle.status == '出租中' %}selected{% endif %}>出租中</option>
+                <option value="維修中" {% if motorcycle.status == '維修中' %}selected{% endif %}>維修中</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="image">機車圖片</label>
+            <input type="file" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif">
+            {% if motorcycle.image_path %}
+            <div class="current-image">
+                <p>目前圖片:</p>
+                <img src="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}" alt="Current image">
+            </div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn">更新</button>
+        <a href="{{ url_for('admin_motorcycles.index') }}" class="btn btn-secondary">取消</a>
+    </form>
+</div>
+{% endblock %}
+

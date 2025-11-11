@@ -1,0 +1,105 @@
+from app.models import db
+from app.models.motorcycle import Motorcycle
+from flask_login import current_user
+
+
+class MotorcycleController:
+    @staticmethod
+    def get_all(store_id=None):
+        """Get all motorcycles, optionally filtered by store"""
+        query = Motorcycle.query
+        # Store admin can only see their store's motorcycles
+        if current_user.is_store_admin() and current_user.store_id:
+            query = query.filter_by(store_id=current_user.store_id)
+        elif store_id:
+            query = query.filter_by(store_id=store_id)
+        return query.all()
+    
+    @staticmethod
+    def get_available(store_id=None):
+        """Get available motorcycles (status = 待出租)"""
+        query = Motorcycle.query.filter_by(status='待出租')
+        if current_user.is_store_admin() and current_user.store_id:
+            query = query.filter_by(store_id=current_user.store_id)
+        elif store_id:
+            query = query.filter_by(store_id=store_id)
+        return query.all()
+    
+    @staticmethod
+    def search_by_license_plate(license_plate, exclude_rented=True):
+        """Search motorcycles by license plate"""
+        query = Motorcycle.query.filter(
+            Motorcycle.license_plate.like(f'%{license_plate}%')
+        )
+        if exclude_rented:
+            query = query.filter(Motorcycle.status != '出租中')
+        # Store admin filter
+        if current_user.is_store_admin() and current_user.store_id:
+            query = query.filter_by(store_id=current_user.store_id)
+        return query.limit(20).all()
+    
+    @staticmethod
+    def get_by_id(motorcycle_id):
+        """Get motorcycle by ID"""
+        motorcycle = Motorcycle.query.get_or_404(motorcycle_id)
+        # Check permission for store admin
+        if current_user.is_store_admin() and motorcycle.store_id != current_user.store_id:
+            from flask import abort
+            abort(403)
+        return motorcycle
+    
+    @staticmethod
+    def create(store_id, license_plate, model, vehicle_type, color=None, image_path=None):
+        """Create a new motorcycle"""
+        # Check permission for store admin
+        if current_user.is_store_admin() and store_id != current_user.store_id:
+            from flask import abort
+            abort(403)
+        
+        motorcycle = Motorcycle(
+            store_id=store_id,
+            license_plate=license_plate,
+            model=model,
+            vehicle_type=vehicle_type,
+            color=color,
+            image_path=image_path,
+            status='待出租'
+        )
+        db.session.add(motorcycle)
+        db.session.commit()
+        return motorcycle
+    
+    @staticmethod
+    def update(motorcycle_id, store_id=None, license_plate=None, model=None, 
+               vehicle_type=None, color=None, image_path=None, status=None):
+        """Update motorcycle"""
+        motorcycle = MotorcycleController.get_by_id(motorcycle_id)
+        
+        if store_id is not None:
+            if current_user.is_store_admin() and store_id != current_user.store_id:
+                from flask import abort
+                abort(403)
+            motorcycle.store_id = store_id
+        if license_plate:
+            motorcycle.license_plate = license_plate
+        if model:
+            motorcycle.model = model
+        if vehicle_type:
+            motorcycle.vehicle_type = vehicle_type
+        if color is not None:
+            motorcycle.color = color
+        if image_path is not None:
+            motorcycle.image_path = image_path
+        if status:
+            motorcycle.status = status
+        
+        db.session.commit()
+        return motorcycle
+    
+    @staticmethod
+    def delete(motorcycle_id):
+        """Delete motorcycle"""
+        motorcycle = MotorcycleController.get_by_id(motorcycle_id)
+        db.session.delete(motorcycle)
+        db.session.commit()
+

@@ -1,0 +1,163 @@
+{% extends "app.html" %}
+
+{% block title %}訂單詳情 - 管理後台{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-width: 800px;
+    }
+    .detail-group {
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    .detail-label {
+        font-weight: 600;
+        color: #666;
+        margin-bottom: 5px;
+    }
+    .detail-value {
+        color: #333;
+        font-size: 16px;
+    }
+    .model-counts {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+    .btn {
+        padding: 10px 20px;
+        background: #95a5a6;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        display: inline-block;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>訂單詳情</h1>
+    
+    <div class="detail-group">
+        <div class="detail-label">訂單編號</div>
+        <div class="detail-value">{{ order.order_number }}</div>
+    </div>
+    
+    <div class="detail-group">
+        <div class="detail-label">合作商</div>
+        <div class="detail-value">{{ order.partner.name if order.partner else '-' }}</div>
+    </div>
+    
+    <div class="detail-group">
+        <div class="detail-label">承租人</div>
+        <div class="detail-value">{{ order.renter_id or '-' }}</div>
+    </div>
+    
+    <div class="detail-group">
+        <div class="detail-label">總金額</div>
+        <div class="detail-value">NT$ {{ order.total_amount }}</div>
+    </div>
+    
+    <div class="detail-group">
+        <div class="detail-label">狀態</div>
+        <div class="detail-value">{{ order.status }}</div>
+    </div>
+    
+    <div class="detail-group">
+        <div class="detail-label">預約日期</div>
+        <div class="detail-value">{{ order.reservation_date.strftime('%Y-%m-%d') if order.reservation_date else '-' }}</div>
+    </div>
+    
+    <div class="detail-group">
+        <div class="detail-label">租借開始時間</div>
+        <div class="detail-value">{{ order.rental_start_time.strftime('%Y-%m-%d %H:%M') if order.rental_start_time else '-' }}</div>
+    </div>
+    
+    <div class="detail-group">
+        <div class="detail-label">租借結束時間</div>
+        <div class="detail-value">{{ order.rental_end_time.strftime('%Y-%m-%d %H:%M') if order.rental_end_time else '-' }}</div>
+    </div>
+    
+    <div class="detail-group">
+        <div class="detail-label">租借機車</div>
+        <div class="detail-value">
+            <ul>
+                {% for om in order.motorcycles %}
+                <li>{{ om.motorcycle.license_plate }} - {{ om.motorcycle.model }} ({{ om.motorcycle.vehicle_type }})</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+    <div class="model-counts">
+        <strong>機車統計：</strong>
+        <div>
+            {% for model, count in counts.items() %}
+            {{ model }}: {{ count }}台{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        <div>總台數: {{ total }}</div>
+    </div>
+    
+    {% if order.shipping_company %}
+    <div class="detail-group">
+        <div class="detail-label">航運公司</div>
+        <div class="detail-value">{{ order.shipping_company }}</div>
+    </div>
+    {% endif %}
+    
+    {% if order.ferry_departure_time %}
+    <div class="detail-group">
+        <div class="detail-label">船班出發時間</div>
+        <div class="detail-value">{{ order.ferry_departure_time.strftime('%Y-%m-%d %H:%M') }}</div>
+    </div>
+    {% endif %}
+    
+    {% if order.ferry_return_time %}
+    <div class="detail-group">
+        <div class="detail-label">船班回程時間</div>
+        <div class="detail-value">{{ order.ferry_return_time.strftime('%Y-%m-%d %H:%M') }}</div>
+    </div>
+    {% endif %}
+    
+    {% if order.contact_phone %}
+    <div class="detail-group">
+        <div class="detail-label">聯絡電話</div>
+        <div class="detail-value">{{ order.contact_phone }}</div>
+    </div>
+    {% endif %}
+    
+    {% if order.payment_method %}
+    <div class="detail-group">
+        <div class="detail-label">付款方式</div>
+        <div class="detail-value">{{ order.payment_method }}</div>
+    </div>
+    {% endif %}
+    
+    {% if order.estimated_return_time %}
+    <div class="detail-group">
+        <div class="detail-label">預計還車時間</div>
+        <div class="detail-value">{{ order.estimated_return_time.strftime('%Y-%m-%d %H:%M') }}</div>
+    </div>
+    {% endif %}
+    
+    {% if order.remarks %}
+    <div class="detail-group">
+        <div class="detail-label">備註</div>
+        <div class="detail-value">{{ order.remarks }}</div>
+    </div>
+    {% endif %}
+    
+    <a href="{{ url_for('admin_orders.index') }}" class="btn">返回列表</a>
+</div>
+{% endblock %}
+

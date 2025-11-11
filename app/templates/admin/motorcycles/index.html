@@ -1,0 +1,112 @@
+{% extends "app.html" %}
+
+{% block title %}機車管理 - 管理後台{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background: #f5f5f5;
+        font-weight: 600;
+    }
+    .btn-edit {
+        background: #3498db;
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+    .btn-delete {
+        background: #e74c3c;
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+    .motorcycle-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>機車管理</h1>
+    <a href="{{ url_for('admin_motorcycles.create') }}" class="btn">新增機車</a>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>圖片</th>
+                <th>車牌號碼</th>
+                <th>機車型號</th>
+                <th>顏色</th>
+                <th>車款類型</th>
+                <th>所屬商店</th>
+                <th>狀態</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for motorcycle in motorcycles %}
+            <tr>
+                <td>
+                    {% if motorcycle.image_path %}
+                        <img src="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}" 
+                             alt="{{ motorcycle.license_plate }}" class="motorcycle-image">
+                    {% else %}
+                        <span>-</span>
+                    {% endif %}
+                </td>
+                <td>{{ motorcycle.license_plate }}</td>
+                <td>{{ motorcycle.model }}</td>
+                <td>{{ motorcycle.color or '-' }}</td>
+                <td>{{ motorcycle.vehicle_type }}</td>
+                <td>{{ motorcycle.store.name if motorcycle.store else '-' }}</td>
+                <td>{{ motorcycle.status }}</td>
+                <td>
+                    <a href="{{ url_for('admin_motorcycles.edit', motorcycle_id=motorcycle.id) }}" class="btn btn-edit">編輯</a>
+                    <form method="POST" action="{{ url_for('admin_motorcycles.delete', motorcycle_id=motorcycle.id) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-delete" onclick="return confirm('確定要刪除嗎？')">刪除</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8" style="text-align: center;">尚無資料</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+

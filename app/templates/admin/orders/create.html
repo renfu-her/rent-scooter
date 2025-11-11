@@ -1,0 +1,311 @@
+{% extends "app.html" %}
+
+{% block title %}新增訂單 - 管理後台{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-width: 800px;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="datetime-local"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    textarea {
+        min-height: 100px;
+    }
+    .btn {
+        padding: 10px 20px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-secondary {
+        background: #95a5a6;
+    }
+    .motorcycle-search {
+        position: relative;
+    }
+    .search-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+    }
+    .search-result-item {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+    }
+    .search-result-item:hover {
+        background: #f5f5f5;
+    }
+    .selected-motorcycles {
+        margin-top: 10px;
+    }
+    .selected-motorcycle {
+        display: inline-block;
+        padding: 5px 10px;
+        background: #e3f2fd;
+        border-radius: 5px;
+        margin: 5px;
+    }
+    .model-counts {
+        margin-top: 10px;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>新增訂單</h1>
+    <form method="POST" id="orderForm">
+        <div class="form-group">
+            <label for="partner_id">合作商</label>
+            <select id="partner_id" name="partner_id">
+                <option value="">選擇合作商</option>
+                {% for partner in partners %}
+                <option value="{{ partner.id }}">{{ partner.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="renter_id">承租人</label>
+            <input type="text" id="renter_id" name="renter_id">
+        </div>
+        
+        <div class="form-group">
+            <label for="rental_motorcycle">租借機車 *</label>
+            <div class="motorcycle-search">
+                <input type="text" id="motorcycle_search" placeholder="輸入車牌號碼搜尋" autocomplete="off">
+                <div id="search_results" class="search-results"></div>
+            </div>
+            <div id="selected_motorcycles" class="selected-motorcycles"></div>
+            <div id="model_counts" class="model-counts" style="display: none;">
+                <strong>機車統計：</strong>
+                <div id="counts_display"></div>
+                <div>總台數: <span id="total_count">0</span></div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="reservation_date">預約日期 *</label>
+            <input type="date" id="reservation_date" name="reservation_date" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="rental_start_time">租借開始時間</label>
+            <input type="datetime-local" id="rental_start_time" name="rental_start_time">
+        </div>
+        
+        <div class="form-group">
+            <label for="rental_end_time">租借結束時間</label>
+            <input type="datetime-local" id="rental_end_time" name="rental_end_time">
+        </div>
+        
+        <div class="form-group">
+            <label for="status">狀態 *</label>
+            <select id="status" name="status" required>
+                <option value="待處理">待處理</option>
+                <option value="進行中">進行中</option>
+                <option value="已完成">已完成</option>
+                <option value="已取消">已取消</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="total_amount">總金額 *</label>
+            <input type="number" id="total_amount" name="total_amount" step="0.01" required>
+        </div>
+        
+        <h3 style="margin-top: 30px; margin-bottom: 15px;">其他選項（非必填）</h3>
+        
+        <div class="form-group">
+            <label for="shipping_company">航運公司</label>
+            <select id="shipping_company" name="shipping_company">
+                <option value="">選擇航運公司</option>
+                <option value="泰富">泰富</option>
+                <option value="藍白">藍白</option>
+                <option value="聯營">聯營</option>
+                <option value="大福">大福</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="ferry_departure_time">船班出發時間</label>
+            <input type="datetime-local" id="ferry_departure_time" name="ferry_departure_time">
+        </div>
+        
+        <div class="form-group">
+            <label for="ferry_return_time">船班回程時間</label>
+            <input type="datetime-local" id="ferry_return_time" name="ferry_return_time">
+        </div>
+        
+        <div class="form-group">
+            <label for="contact_phone">聯絡電話</label>
+            <input type="text" id="contact_phone" name="contact_phone">
+        </div>
+        
+        <div class="form-group">
+            <label for="payment_method">付款方式</label>
+            <select id="payment_method" name="payment_method">
+                <option value="">選擇付款方式</option>
+                <option value="現金">現金</option>
+                <option value="月結">月結</option>
+                <option value="日結">日結</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="estimated_return_time">預計還車時間</label>
+            <input type="datetime-local" id="estimated_return_time" name="estimated_return_time">
+        </div>
+        
+        <div class="form-group">
+            <label for="remarks">備註</label>
+            <textarea id="remarks" name="remarks"></textarea>
+        </div>
+        
+        <button type="submit" class="btn">建立</button>
+        <a href="{{ url_for('admin_orders.index') }}" class="btn btn-secondary">取消</a>
+    </form>
+</div>
+
+<script>
+let selectedMotorcycles = [];
+let searchTimeout;
+
+document.getElementById('motorcycle_search').addEventListener('input', function(e) {
+    const query = e.target.value.trim();
+    const resultsDiv = document.getElementById('search_results');
+    
+    if (query.length < 2) {
+        resultsDiv.style.display = 'none';
+        return;
+    }
+    
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        fetch(`{{ url_for('admin_orders.search_motorcycles') }}?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                resultsDiv.innerHTML = '';
+                if (data.length === 0) {
+                    resultsDiv.innerHTML = '<div class="search-result-item">無結果</div>';
+                } else {
+                    data.forEach(motorcycle => {
+                        if (!selectedMotorcycles.find(m => m.id === motorcycle.id)) {
+                            const item = document.createElement('div');
+                            item.className = 'search-result-item';
+                            item.textContent = `${motorcycle.license_plate} - ${motorcycle.model} (${motorcycle.vehicle_type})`;
+                            item.onclick = () => addMotorcycle(motorcycle);
+                            resultsDiv.appendChild(item);
+                        }
+                    });
+                }
+                resultsDiv.style.display = 'block';
+            });
+    }, 300);
+});
+
+function addMotorcycle(motorcycle) {
+    if (!selectedMotorcycles.find(m => m.id === motorcycle.id)) {
+        selectedMotorcycles.push(motorcycle);
+        updateSelectedMotorcycles();
+        document.getElementById('motorcycle_search').value = '';
+        document.getElementById('search_results').style.display = 'none';
+    }
+}
+
+function removeMotorcycle(id) {
+    selectedMotorcycles = selectedMotorcycles.filter(m => m.id !== id);
+    updateSelectedMotorcycles();
+}
+
+function updateSelectedMotorcycles() {
+    const container = document.getElementById('selected_motorcycles');
+    container.innerHTML = '';
+    
+    selectedMotorcycles.forEach(motorcycle => {
+        const div = document.createElement('div');
+        div.className = 'selected-motorcycle';
+        div.innerHTML = `${motorcycle.license_plate} <button type="button" onclick="removeMotorcycle(${motorcycle.id})" style="margin-left: 5px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer;">×</button>`;
+        container.appendChild(div);
+        
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'motorcycle_ids';
+        hiddenInput.value = motorcycle.id;
+        container.appendChild(hiddenInput);
+    });
+    
+    updateModelCounts();
+}
+
+function updateModelCounts() {
+    const counts = {};
+    selectedMotorcycles.forEach(m => {
+        counts[m.model] = (counts[m.model] || 0) + 1;
+    });
+    
+    const countsDiv = document.getElementById('counts_display');
+    const totalSpan = document.getElementById('total_count');
+    const modelCountsDiv = document.getElementById('model_counts');
+    
+    if (selectedMotorcycles.length === 0) {
+        modelCountsDiv.style.display = 'none';
+        return;
+    }
+    
+    modelCountsDiv.style.display = 'block';
+    countsDiv.innerHTML = Object.entries(counts).map(([model, count]) => 
+        `${model}: ${count}台`
+    ).join(', ');
+    totalSpan.textContent = selectedMotorcycles.length;
+}
+
+// Close search results when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.motorcycle-search')) {
+        document.getElementById('search_results').style.display = 'none';
+    }
+});
+</script>
+{% endblock %}
+

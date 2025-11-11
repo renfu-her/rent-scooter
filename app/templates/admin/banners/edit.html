@@ -1,0 +1,96 @@
+{% extends "app.html" %}
+
+{% block title %}編輯Banner - 管理後台{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-width: 600px;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="file"],
+    input[type="checkbox"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    input[type="checkbox"] {
+        width: auto;
+    }
+    .btn {
+        padding: 10px 20px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-secondary {
+        background: #95a5a6;
+    }
+    .current-image {
+        margin-top: 10px;
+    }
+    .current-image img {
+        max-width: 300px;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>編輯Banner</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">標題 *</label>
+            <input type="text" id="title" name="title" value="{{ banner.title }}" required>
+        </div>
+        <div class="form-group">
+            <label for="image">圖片 (留空則不更新)</label>
+            <input type="file" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif">
+            {% if banner.image_path %}
+            <div class="current-image">
+                <p>目前圖片:</p>
+                <img src="{{ url_for('admin_banners.uploaded_file', filename=banner.image_path) }}" alt="Current image">
+            </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="link_url">連結網址</label>
+            <input type="text" id="link_url" name="link_url" value="{{ banner.link_url or '' }}" placeholder="https://example.com">
+        </div>
+        <div class="form-group">
+            <label for="display_order">顯示順序</label>
+            <input type="number" id="display_order" name="display_order" value="{{ banner.display_order }}">
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" id="is_active" name="is_active" {% if banner.is_active %}checked{% endif %}>
+                啟用
+            </label>
+        </div>
+        <button type="submit" class="btn">更新</button>
+        <a href="{{ url_for('admin_banners.index') }}" class="btn btn-secondary">取消</a>
+    </form>
+</div>
+{% endblock %}
+
