@@ -1,0 +1,202 @@
+{% extends "app.html" %}
+
+{% block title %}登入 / 註冊 - 機車租賃{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-tabs mb-4" id="authTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab" aria-controls="login" aria-selected="true">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>登入
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button" role="tab" aria-controls="register" aria-selected="false">
+                                <i class="bi bi-person-plus me-2"></i>註冊
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="authTabsContent">
+                        <!-- Login Form -->
+                        <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
+                            <h4 class="mb-4">登入帳號</h4>
+                            <form id="loginForm">
+                                <div class="mb-3">
+                                    <label for="loginEmail" class="form-label">電子郵件 <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="loginEmail" name="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="loginPassword" class="form-label">密碼 <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control" id="loginPassword" name="password" required>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i>登入
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Register Form -->
+                        <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
+                            <h4 class="mb-4">註冊新帳號</h4>
+                            <form id="registerForm">
+                                <div class="mb-3">
+                                    <label for="registerUsername" class="form-label">使用者名稱 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="registerUsername" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerEmail" class="form-label">電子郵件 <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="registerEmail" name="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerPassword" class="form-label">密碼 <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control" id="registerPassword" name="password" required minlength="6">
+                                    <small class="form-text text-muted">密碼長度至少需要6個字元</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerIdNumber" class="form-label">身份證字號（選填）</label>
+                                    <input type="text" class="form-control" id="registerIdNumber" name="id_number" 
+                                           placeholder="例：A123456789" 
+                                           maxlength="10"
+                                           style="text-transform: uppercase;"
+                                           oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 10);">
+                                    <small class="form-text text-muted">可稍後在個人資料中補充</small>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-person-plus me-2"></i>註冊
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Container -->
+<div id="alertContainer" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 9999;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Show alert function
+    function showAlert(message, type) {
+        var alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+        var alertHtml = `
+            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        $('#alertContainer').html(alertHtml);
+        
+        // Auto dismiss after 5 seconds
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 5000);
+    }
+
+    // Login Form Handler
+    $('#loginForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        var email = $('#loginEmail').val().trim();
+        var password = $('#loginPassword').val();
+        
+        if (!email || !password) {
+            showAlert('請輸入電子郵件和密碼', 'error');
+            return;
+        }
+        
+        $.ajax({
+            url: '/api/frontend/login',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                email: email,
+                password: password
+            }),
+            success: function(response) {
+                showAlert(response.message, 'success');
+                setTimeout(function() {
+                    window.location.href = '/';
+                }, 1000);
+            },
+            error: function(xhr) {
+                var errorMsg = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : '登入失敗，請稍後再試';
+                showAlert(errorMsg, 'error');
+            }
+        });
+    });
+
+    // Register Form Handler
+    $('#registerForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        var username = $('#registerUsername').val().trim();
+        var email = $('#registerEmail').val().trim();
+        var password = $('#registerPassword').val();
+        var idNumber = $('#registerIdNumber').val().trim() || null;
+        
+        if (!username || !email || !password) {
+            showAlert('請填寫所有必填欄位', 'error');
+            return;
+        }
+        
+        if (password.length < 6) {
+            showAlert('密碼長度至少需要6個字元', 'error');
+            return;
+        }
+        
+        // Validate ID number if provided
+        if (idNumber) {
+            if (idNumber.length !== 10) {
+                showAlert('身份證字號必須為10碼', 'error');
+                return;
+            }
+            
+            // Basic validation
+            if (!/^[A-Z][12]\d{8}$/.test(idNumber)) {
+                showAlert('身份證字號格式錯誤', 'error');
+                return;
+            }
+        }
+        
+        $.ajax({
+            url: '/api/frontend/register',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                username: username,
+                email: email,
+                password: password,
+                id_number: idNumber
+            }),
+            success: function(response) {
+                showAlert(response.message, 'success');
+                setTimeout(function() {
+                    window.location.href = '/';
+                }, 1000);
+            },
+            error: function(xhr) {
+                var errorMsg = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : '註冊失敗，請稍後再試';
+                showAlert(errorMsg, 'error');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+

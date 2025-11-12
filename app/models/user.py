@@ -11,6 +11,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False, index=True)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
+    id_number = db.Column(db.String(20), nullable=True)  # 身份證字號
     user_type = db.Column(db.String(20), nullable=False, default='customer')  # admin, customer, store_admin
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'), nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)

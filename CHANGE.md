@@ -2,7 +2,66 @@
 
 本文檔記錄專案的所有重要修改和功能更新。
 
-**最後更新時間：2025-11-12 16:33:10**
+**最後更新時間：2025-11-12 16:43:38**
+
+---
+
+## 2025-11-12 16:43 - 實現前端用戶登入/註冊功能
+
+### 修改內容
+- **User 模型更新**：添加 `id_number` 欄位（身份證字號）
+- **前端登入/註冊**：
+  - 創建前端登入/註冊頁面（同一個畫面，使用 Tab 切換）
+  - 支持使用 email 和 password 登入
+  - 支持註冊新用戶（包含身份證字號選填）
+  - 只有 `user_type` 為 `customer` 的用戶可以使用前端登入
+- **前端導航欄更新**：
+  - 登入後顯示用戶名下拉選單
+  - 下拉選單包含：個人資料、我的訂單、登出
+  - 支持移動端響應式設計
+- **個人資料頁面**：
+  - 用戶可以查看和編輯個人資料（使用者名稱、電子郵件、身份證字號）
+  - 身份證字號驗證
+- **我的訂單頁面**：
+  - 顯示用戶的所有訂單（根據身份證字號匹配）
+  - 顯示訂單編號、機車資訊、總金額、狀態、預約日期、建立時間
+- **預訂表單自動填入**：
+  - 登入用戶預訂時，自動填入用戶名稱和身份證字號
+  - 如果用戶未填寫身份證字號，則不會自動填入
+
+### 修改檔案
+- `app/models/user.py`：添加 `id_number` 欄位
+- `app/controllers/auth_controller.py`：
+  - 更新 `login` 方法支持 email 登入
+  - 添加 `login_by_username` 方法（向後兼容）
+  - 更新 `create_user` 方法支持身份證字號
+- `app/views/auth.py`：
+  - 添加 `/frontend/login` 路由（前端登入/註冊頁面）
+  - 添加 `/api/frontend/login` API 端點
+  - 添加 `/api/frontend/register` API 端點
+  - 更新 `logout` 路由，根據用戶類型重定向
+- `app/views/frontend.py`：
+  - 添加 `/profile` 路由（個人資料頁面）
+  - 添加 `/orders` 路由（我的訂單頁面）
+- `app/controllers/order_controller.py`：
+  - 添加 `get_by_user_id_number` 方法（根據身份證字號獲取訂單）
+- `app/templates/frontend/login.html`：新建前端登入/註冊頁面
+- `app/templates/frontend/profile.html`：新建個人資料頁面
+- `app/templates/frontend/orders.html`：新建我的訂單頁面
+- `app/templates/app.html`：
+  - 更新導航欄，添加用戶下拉選單
+  - 添加下拉選單 JavaScript 處理
+- `app/templates/frontend/store_detail.html`：
+  - 更新預訂表單，自動填入登入用戶的資訊
+- `app/static/css/frontend.css`：
+  - 添加下拉選單樣式
+  - 更新移動端響應式設計
+
+### 說明
+- 前端用戶必須先註冊/登入才能使用完整功能
+- 身份證字號為選填，但填寫後可以在預訂時自動填入
+- 訂單根據身份證字號匹配，確保用戶只能看到自己的訂單
+- 前端登入和後台登入分開處理，互不影響
 
 ---
 

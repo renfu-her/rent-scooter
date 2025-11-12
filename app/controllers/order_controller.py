@@ -17,6 +17,11 @@ class OrderController:
         return Order.query.order_by(Order.created_at.desc()).all()
     
     @staticmethod
+    def get_by_user_id_number(id_number):
+        """Get orders by user ID number"""
+        return Order.query.filter_by(renter_id_number=id_number).order_by(Order.created_at.desc()).all()
+    
+    @staticmethod
     def get_by_id(order_id):
         """Get order by ID"""
         return Order.query.get_or_404(order_id)

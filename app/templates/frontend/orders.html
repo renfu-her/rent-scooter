@@ -1,0 +1,68 @@
+{% extends "app.html" %}
+
+{% block title %}我的訂單 - 機車租賃{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">
+        <i class="bi bi-list-ul me-2"></i>我的訂單
+    </h2>
+    
+    {% if orders %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>訂單編號</th>
+                    <th>機車</th>
+                    <th>總金額</th>
+                    <th>狀態</th>
+                    <th>預約日期</th>
+                    <th>建立時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.order_number }}</td>
+                    <td>
+                        {% for om in order.motorcycles %}
+                            {{ om.motorcycle.license_plate }} - {{ om.motorcycle.model }}
+                            {% if not loop.last %}<br>{% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>NT$ {{ order.total_amount | int if order.total_amount else 0 }}</td>
+                    <td>
+                        {% if order.status == '待處理' %}
+                            <span class="badge bg-warning">{{ order.status }}</span>
+                        {% elif order.status == '已出租' %}
+                            <span class="badge bg-primary">{{ order.status }}</span>
+                        {% elif order.status == '已歸還' %}
+                            <span class="badge bg-success">{{ order.status }}</span>
+                        {% elif order.status == '已取消' %}
+                            <span class="badge bg-secondary">{{ order.status }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ order.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ order.reservation_date.strftime('%Y-%m-%d') if order.reservation_date else '-' }}</td>
+                    <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') if order.created_at else '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>尚無訂單記錄
+    </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <a href="{{ url_for('frontend.index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i>返回首頁
+        </a>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,55 @@
+{% extends "app.html" %}
+
+{% block title %}個人資料 - 機車租賃{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person me-2"></i>個人資料
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">使用者名稱 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   value="{{ user.username }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">電子郵件 <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ user.email }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_number" class="form-label">身份證字號（選填）</label>
+                            <input type="text" class="form-control" id="id_number" name="id_number" 
+                                   value="{{ user.id_number or '' }}" 
+                                   placeholder="例：A123456789" 
+                                   maxlength="10"
+                                   style="text-transform: uppercase;"
+                                   oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 10);">
+                            <small class="form-text text-muted">填寫身份證字號後，預訂時會自動填入</small>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('frontend.index') }}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>返回
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>儲存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

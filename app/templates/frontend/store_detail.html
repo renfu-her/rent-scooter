@@ -290,6 +290,10 @@
                         licenseWarningHtml = '<div class="alert alert-warning mt-2"><i class="bi bi-exclamation-triangle me-1"></i>此車款類型需要駕照</div>';
                     }
                     
+                    // Get user info from template (if logged in)
+                    var userUsername = {% if current_user.is_authenticated and current_user.user_type == 'customer' %}'{{ current_user.username }}'{% else %}null{% endif %};
+                    var userIdNumber = {% if current_user.is_authenticated and current_user.user_type == 'customer' and current_user.id_number %}'{{ current_user.id_number }}'{% else %}null{% endif %};
+                    
                     var content = `
                         <div class="text-center mb-3">
                             ${imageHtml}
@@ -304,12 +308,13 @@
                         <hr>
                         <div class="mb-3">
                             <label for="renterName" class="form-label"><strong>承租人姓名 <span class="text-danger">*</span></strong></label>
-                            <input type="text" class="form-control" id="renterName" placeholder="請輸入姓名" required>
+                            <input type="text" class="form-control" id="renterName" placeholder="請輸入姓名" value="${userUsername || ''}" required>
                         </div>
                         <div class="mb-3">
                             <label for="renterIdNumber" class="form-label"><strong>身份證號碼 <span class="text-danger">*</span></strong></label>
                             <input type="text" class="form-control id-number-input" id="renterIdNumber" 
                                    placeholder="請輸入身份證號碼（例：A123456789）" 
+                                   value="${userIdNumber || ''}"
                                    required 
                                    maxlength="10"
                                    oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 10);">
