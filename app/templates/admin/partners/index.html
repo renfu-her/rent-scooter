@@ -3,38 +3,48 @@
 {% block admin_title %}合作商管理 - 管理後台{% endblock %}
 
 {% block admin_content %}
-    <h1>合作商管理</h1>
-    <a href="{{ url_for('admin_partners.create') }}" class="btn">新增合作商</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">合作商管理</h1>
+        <a href="{{ url_for('admin_partners.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> 新增合作商
+        </a>
+    </div>
     
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>名稱</th>
-                <th>地址</th>
-                <th>統編</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for partner in partners %}
-            <tr>
-                <td>{{ partner.id }}</td>
-                <td>{{ partner.name }}</td>
-                <td>{{ partner.address or '-' }}</td>
-                <td>{{ partner.tax_id or '-' }}</td>
-                <td>
-                    <a href="{{ url_for('admin_partners.edit', partner_id=partner.id) }}" class="btn btn-edit">編輯</a>
-                    <form method="POST" action="{{ url_for('admin_partners.delete', partner_id=partner.id) }}" style="display: inline;">
-                        <button type="submit" class="btn btn-delete" onclick="return confirm('確定要刪除嗎？')">刪除</button>
-                    </form>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="5" style="text-align: center;">尚無資料</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>名稱</th>
+                    <th>地址</th>
+                    <th>統編</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for partner in partners %}
+                <tr>
+                    <td>{{ partner.id }}</td>
+                    <td>{{ partner.name }}</td>
+                    <td>{{ partner.address or '-' }}</td>
+                    <td>{{ partner.tax_id or '-' }}</td>
+                    <td>
+                        <a href="{{ url_for('admin_partners.edit', partner_id=partner.id) }}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-pencil"></i> 編輯
+                        </a>
+                        <form method="POST" action="{{ url_for('admin_partners.delete', partner_id=partner.id) }}" style="display: inline;" onsubmit="return confirm('確定要刪除嗎？');">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> 刪除
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">尚無資料</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

@@ -3,38 +3,48 @@
 {% block admin_title %}商店管理 - 管理後台{% endblock %}
 
 {% block admin_content %}
-    <h1>商店管理</h1>
-    <a href="{{ url_for('admin_stores.create') }}" class="btn">新增商店</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">商店管理</h1>
+        <a href="{{ url_for('admin_stores.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> 新增商店
+        </a>
+    </div>
     
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>名稱</th>
-                <th>地址</th>
-                <th>電話</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for store in stores %}
-            <tr>
-                <td>{{ store.id }}</td>
-                <td>{{ store.name }}</td>
-                <td>{{ store.address or '-' }}</td>
-                <td>{{ store.phone or '-' }}</td>
-                <td>
-                    <a href="{{ url_for('admin_stores.edit', store_id=store.id) }}" class="btn btn-edit">編輯</a>
-                    <form method="POST" action="{{ url_for('admin_stores.delete', store_id=store.id) }}" style="display: inline;">
-                        <button type="submit" class="btn btn-delete" onclick="return confirm('確定要刪除嗎？')">刪除</button>
-                    </form>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="5" style="text-align: center;">尚無資料</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>名稱</th>
+                    <th>地址</th>
+                    <th>電話</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for store in stores %}
+                <tr>
+                    <td>{{ store.id }}</td>
+                    <td>{{ store.name }}</td>
+                    <td>{{ store.address or '-' }}</td>
+                    <td>{{ store.phone or '-' }}</td>
+                    <td>
+                        <a href="{{ url_for('admin_stores.edit', store_id=store.id) }}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-pencil"></i> 編輯
+                        </a>
+                        <form method="POST" action="{{ url_for('admin_stores.delete', store_id=store.id) }}" style="display: inline;" onsubmit="return confirm('確定要刪除嗎？');">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> 刪除
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">尚無資料</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

@@ -3,47 +3,53 @@
 {% block admin_title %}新增機車 - 管理後台{% endblock %}
 
 {% block admin_content %}
-    <h1>新增機車</h1>
+    <h1 class="mb-4">新增機車</h1>
     <form method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="store_id">所屬商店 *</label>
-            <select id="store_id" name="store_id" required>
+        <div class="mb-3">
+            <label for="store_id" class="form-label">所屬商店 *</label>
+            <select class="form-select" id="store_id" name="store_id" required>
                 <option value="">選擇商店</option>
                 {% for store in stores %}
                 <option value="{{ store.id }}">{{ store.name }}</option>
                 {% endfor %}
             </select>
         </div>
-        <div class="form-group">
-            <label for="license_plate">車牌號碼 *</label>
-            <input type="text" id="license_plate" name="license_plate" required>
+        <div class="mb-3">
+            <label for="license_plate" class="form-label">車牌號碼 *</label>
+            <input type="text" class="form-control" id="license_plate" name="license_plate" required>
         </div>
-        <div class="form-group">
-            <label for="model">機車型號 *</label>
-            <input type="text" id="model" name="model" required>
+        <div class="mb-3">
+            <label for="model" class="form-label">機車型號 *</label>
+            <input type="text" class="form-control" id="model" name="model" required>
         </div>
-        <div class="form-group">
-            <label for="color">顏色</label>
-            <select id="color" name="color">
+        <div class="mb-3">
+            <label for="color" class="form-label">顏色</label>
+            <select class="form-select" id="color" name="color">
                 <option value="">選擇顏色</option>
                 <option value="黑">黑</option>
                 <option value="白">白</option>
             </select>
         </div>
-        <div class="form-group">
-            <label for="vehicle_type">車款類型 *</label>
-            <select id="vehicle_type" name="vehicle_type" required>
+        <div class="mb-3">
+            <label for="vehicle_type" class="form-label">車款類型 *</label>
+            <select class="form-select" id="vehicle_type" name="vehicle_type" required>
                 <option value="">選擇車款類型</option>
                 <option value="白牌">白牌</option>
                 <option value="綠牌">綠牌</option>
                 <option value="電輔車">電輔車</option>
             </select>
         </div>
-        <div class="form-group">
-            <label for="image">機車圖片</label>
-            <input type="file" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif">
+        <div class="mb-3">
+            <label for="image" class="form-label">機車圖片</label>
+            <input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif">
         </div>
-        <button type="submit" class="btn">建立</button>
-        <a href="{{ url_for('admin_motorcycles.index') }}" class="btn btn-secondary">取消</a>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> 建立
+            </button>
+            <a href="{{ url_for('admin_motorcycles.index') }}" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> 取消
+            </a>
+        </div>
     </form>
 {% endblock %}

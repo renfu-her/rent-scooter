@@ -10,7 +10,7 @@ auth_bp = Blueprint('auth', __name__)
 def login():
     """Login page"""
     if current_user.is_authenticated:
-        return redirect(url_for('admin_motorcycles.index'))
+        return redirect(url_for('backend.index'))
     
     if request.method == 'POST':
         username = request.form.get('username')
@@ -27,9 +27,9 @@ def login():
             if not next_page:
                 # Redirect based on user type
                 if user.is_admin():
-                    next_page = url_for('admin_motorcycles.index')
+                    next_page = url_for('backend.index')
                 elif user.is_store_admin():
-                    next_page = url_for('admin_motorcycles.index')
+                    next_page = url_for('backend.index')
                 else:
                     next_page = url_for('frontend.index')
             return redirect(next_page)
