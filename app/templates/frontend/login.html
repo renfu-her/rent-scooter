@@ -121,7 +121,7 @@ $(document).ready(function() {
         }
         
         $.ajax({
-            url: '/api/frontend/login',
+            url: '/auth/api/frontend/login',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
@@ -175,7 +175,7 @@ $(document).ready(function() {
         }
         
         $.ajax({
-            url: '/api/frontend/register',
+            url: '/auth/api/frontend/register',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({

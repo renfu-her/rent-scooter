@@ -31,6 +31,15 @@ header {
 .logo {
     font-size: 24px;
     font-weight: bold;
+    color: white;
+    text-decoration: none;
+    transition: opacity 0.3s;
+}
+
+.logo:hover {
+    opacity: 0.8;
+    color: white;
+    text-decoration: none;
 }
 
 nav ul {
@@ -51,48 +60,39 @@ nav a:hover {
     background: rgba(255,255,255,0.1);
 }
 
+nav .nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background 0.3s;
+    display: inline-block;
+}
+
+nav .nav-link:hover {
+    background: rgba(255,255,255,0.1);
+}
+
 /* Dropdown menu styles */
 nav .nav-item.dropdown {
     position: relative;
 }
 
-nav .dropdown-toggle {
-    cursor: pointer;
-}
-
 nav .dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
     background: white;
     min-width: 200px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     border-radius: 5px;
-    padding: 5px 0;
-    margin-top: 5px;
     z-index: 1000;
 }
 
-nav .dropdown-menu.show {
-    display: block;
-}
-
 nav .dropdown-item {
-    display: block;
-    padding: 10px 20px;
     color: #333;
-    text-decoration: none;
-    transition: background 0.2s;
 }
 
 nav .dropdown-item:hover {
     background: #f5f5f5;
-}
-
-nav .dropdown-divider {
-    margin: 5px 0;
-    border-top: 1px solid #e0e0e0;
+    color: #333;
 }
 
 /* Mobile menu toggle button */
@@ -146,7 +146,6 @@ nav .dropdown-divider {
     
     nav .dropdown-menu {
         position: static;
-        display: block;
         background: rgba(0,0,0,0.2);
         box-shadow: none;
         margin-top: 0;
@@ -160,6 +159,7 @@ nav .dropdown-divider {
     
     nav .dropdown-item:hover {
         background: rgba(255,255,255,0.1);
+        color: white;
     }
     
     nav ul {
