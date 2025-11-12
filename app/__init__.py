@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_socketio import SocketIO
+from flask_caching import Cache
+from flask_compress import Compress
 from app.config import Config
 from app.models import db
 from app.models.user import User
@@ -11,6 +13,8 @@ login_manager.login_message = '請先登入以繼續'
 login_manager.login_message_category = 'info'
 
 socketio = SocketIO(cors_allowed_origins="*")
+cache = Cache()
+compress = Compress()
 
 
 @login_manager.user_loader
@@ -26,6 +30,8 @@ def create_app(config_class=Config):
     db.init_app(app)
     login_manager.init_app(app)
     socketio.init_app(app)
+    cache.init_app(app)
+    compress.init_app(app)
     
     # Register blueprints
     from app.views.auth import auth_bp

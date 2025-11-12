@@ -1,11 +1,13 @@
 from flask import Blueprint, jsonify, request
 from app.controllers.banner_controller import BannerController
 from app.utils.decorators import login_required
+from app import cache
 
 api_banners_bp = Blueprint('api_banners', __name__)
 
 
 @api_banners_bp.route('', methods=['GET'])
+@cache.cached(timeout=300, key_prefix='banners_list')  # 缓存5分钟
 def list_banners():
     """Get all banners (public endpoint)"""
     active_only = request.args.get('active_only', 'false').lower() == 'true'
@@ -52,6 +54,8 @@ def create_banner():
             display_order=data.get('display_order', 0),
             is_active=data.get('is_active', True)
         )
+        # 清除缓存
+        cache.delete('banners_list')
         return jsonify({
             'id': banner.id,
             'title': banner.title,
@@ -78,6 +82,8 @@ def update_banner(banner_id):
             display_order=data.get('display_order'),
             is_active=data.get('is_active')
         )
+        # 清除缓存
+        cache.delete('banners_list')
         return jsonify({
             'id': banner.id,
             'title': banner.title,
@@ -96,6 +102,8 @@ def delete_banner(banner_id):
     """Delete banner"""
     try:
         BannerController.delete(banner_id)
+        # 清除缓存
+        cache.delete('banners_list')
         return jsonify({'message': 'Banner deleted successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400

@@ -5,6 +5,7 @@ from app.controllers.store_controller import StoreController
 from app.controllers.motorcycle_controller import MotorcycleController
 from app.controllers.order_controller import OrderController
 from app.controllers.user_controller import UserController
+from app.controllers.banner_controller import BannerController
 from app.models.motorcycle import Motorcycle
 from app.models import db
 from app.utils.timezone_utils import check_expired_reservations
@@ -19,7 +20,8 @@ def index():
     # Check expired reservations before loading
     check_expired_reservations()
     stores = StoreController.get_all()
-    return render_template('frontend/index.html', stores=stores)
+    banners = BannerController.get_active()  # 获取激活的banners
+    return render_template('frontend/index.html', stores=stores, banners=banners)
 
 
 @frontend_bp.route('/stores/<int:store_id>')

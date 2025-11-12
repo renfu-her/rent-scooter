@@ -13,4 +13,13 @@ class Config:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     TIMEZONE = 'Asia/Taipei'  # 時區設定
+    
+    # Flask-Caching configuration
+    CACHE_TYPE = 'SimpleCache'  # 使用内存缓存，生产环境可改为 RedisCache
+    CACHE_DEFAULT_TIMEOUT = 300  # 默认缓存时间5分钟
+    
+    # Flask-Compress configuration
+    COMPRESS_MIMETYPES = ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
+    COMPRESS_LEVEL = 6  # 压缩级别 1-9，6是平衡性能和压缩率的好选择
+    COMPRESS_MIN_SIZE = 500  # 只压缩大于500字节的响应
 

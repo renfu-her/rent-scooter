@@ -47,6 +47,33 @@ body > footer {
 
 .sidebar-nav {
     padding: 0.5rem 0;
+    direction: ltr;
+    text-align: left;
+    width: 100%;
+}
+
+.sidebar-nav ul {
+    direction: ltr;
+    text-align: left;
+    width: 100%;
+    align-items: flex-start !important;
+}
+
+.sidebar-nav .nav {
+    align-items: flex-start !important;
+    width: 100%;
+}
+
+.sidebar-nav .nav-item {
+    width: 100%;
+    text-align: left;
+    direction: ltr;
+}
+
+.sidebar-nav .nav-item > .nav-link {
+    width: 100%;
+    text-align: left;
+    justify-content: flex-start !important;
 }
 
 .sidebar-nav .nav-link {
@@ -71,16 +98,23 @@ body > footer {
     display: flex;
     align-items: center;
     text-align: left;
+    justify-content: flex-start;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+    direction: ltr;
 }
 
 .sidebar-nav .nav-link i {
     width: 20px;
     flex-shrink: 0;
+    text-align: left;
+    writing-mode: horizontal-tb;
 }
 
 /* 對於有下拉選單的項目，文字靠左，箭頭靠右 */
 .sidebar-nav .nav-link[data-bs-toggle="collapse"] {
     justify-content: space-between;
+    text-align: left !important;
 }
 
 .sidebar-nav .nav-link[data-bs-toggle="collapse"] > span {
@@ -88,6 +122,14 @@ body > footer {
     align-items: center;
     flex: 1;
     text-align: left;
+    justify-content: flex-start;
+    writing-mode: horizontal-tb;
+    direction: ltr;
+}
+
+.sidebar-nav .nav-link[data-bs-toggle="collapse"] .bi-chevron-down {
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 .sidebar-nav .nav-link .bi-chevron-down {
@@ -99,9 +141,103 @@ body > footer {
     transform: rotate(180deg);
 }
 
+.sidebar-nav .collapse {
+    background: rgba(0,0,0,0.2);
+    direction: ltr !important;
+    text-align: left !important;
+    width: 100%;
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    /* Bootstrap collapse默认行为，不要覆盖 */
+}
+
+.sidebar-nav .collapse * {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+}
+
+.sidebar-nav .collapse:not(.show) {
+    display: none;
+}
+
+.sidebar-nav .collapse.show {
+    display: block;
+}
+
+/* 子菜单垂直排列 - 简化版本 */
+.sidebar-nav .collapse ul,
+.sidebar-nav .collapse .nav,
+.sidebar-nav .collapse .nav.flex-column {
+    display: block !important;
+    width: 100% !important;
+}
+
+.sidebar-nav .collapse .nav-item,
+.sidebar-nav .collapse li {
+    display: block !important;
+    width: 100% !important;
+    float: none !important;
+}
+
+.sidebar-nav .collapse .nav-item {
+    direction: ltr !important;
+    text-align: left !important;
+    width: 100% !important;
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    display: block !important;
+    float: none !important;
+}
+
+.sidebar-nav .collapse .nav-item * {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+}
+
+.sidebar-nav .collapse .nav-item > .nav-link {
+    width: 100% !important;
+    text-align: left;
+    display: block !important;
+    box-sizing: border-box !important;
+}
+
 .sidebar-nav .collapse .nav-link {
-    padding-left: 2.5rem;
+    padding-left: 2.5rem !important;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
     font-size: 0.9rem;
+    text-align: left !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start !important;
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    direction: ltr !important;
+    white-space: nowrap;
+    transform: none !important;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.sidebar-nav .collapse .nav-link * {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    transform: none !important;
+}
+
+.sidebar-nav .collapse .nav-link i {
+    text-align: left;
+    writing-mode: horizontal-tb !important;
+    transform: none !important;
+    display: inline-block !important;
+}
+
+.sidebar-nav .collapse .nav-link span {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    transform: none !important;
+    display: inline !important;
 }
 
 .sidebar-nav .collapse .nav-link:hover {
@@ -124,6 +260,14 @@ body > footer {
 
 .navbar {
     border-bottom: 1px solid #dee2e6;
+    min-height: 56px;
+    height: 56px;
+}
+
+.navbar .container-fluid {
+    display: flex;
+    align-items: center;
+    height: 100%;
 }
 
 @media (max-width: 991px) {

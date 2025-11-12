@@ -68,6 +68,12 @@ nav ul li {
     height: 100%;
 }
 
+nav ul li.nav-item.dropdown {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
 nav a {
     color: white;
     text-decoration: none;
@@ -97,22 +103,63 @@ nav .nav-link:hover {
 /* Dropdown menu styles */
 nav .nav-item.dropdown {
     position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+nav .nav-item.dropdown .nav-link {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+nav .nav-item.dropdown .nav-link:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+nav .nav-item.dropdown.show {
+    /* background: white; */
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 0;
+}
+
+nav .nav-item.dropdown.show .nav-link {
+    color: white !important;
+    background: rgba(255,255,255,0.1) !important;
+    border-radius: 5px;
+    border-bottom: none;
 }
 
 nav .dropdown-menu {
     background: white;
     min-width: 200px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border-radius: 5px;
+    box-shadow: none;
+    border-radius: 0 0 5px 5px;
     z-index: 1000;
+    margin-top: 0;
+    padding: 5px 0;
+    border: none;
+    border-top: none;
+    width: 100%;
+}
+
+nav .nav-item.dropdown.show .dropdown-menu {
+    border: none;
+    border-top: none;
 }
 
 nav .dropdown-item {
     color: #333;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    background: white;
 }
 
 nav .dropdown-item:hover {
-    background: #f5f5f5;
+    background: white;
     color: #333;
 }
 
@@ -208,6 +255,106 @@ main {
 
 main > .container {
     padding: 0 20px;
+}
+
+/* Banner Hero Section Styles */
+.banner-hero-wrapper {
+    width: 100%;
+    /* margin-left: calc(-50vw + 50%); */
+    /* margin-right: calc(-50vw + 50%); */
+    margin-bottom: 2rem;
+}
+
+.banner-hero {
+    height: 300px;
+    overflow: hidden;
+    position: relative;
+    width: 100vw;
+    max-width: 100%;
+}
+
+.banner-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.banner-slide.active {
+    opacity: 1;
+}
+
+.banner-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.banner-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+}
+
+.banner-hero-content {
+    color: white;
+    text-align: center;
+    max-width: 100%;
+    width: 100%;
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 1.5rem 2rem;
+    border-radius: 0;
+    backdrop-filter: blur(5px);
+    box-sizing: border-box;
+    margin-bottom: 0;
+    border-top: 3px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 3px solid rgba(255, 255, 255, 0.8);
+}
+
+.banner-hero-content h1 {
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+    word-wrap: break-word;
+    position: relative;
+}
+
+.banner-hero-content p {
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    word-wrap: break-word;
+    line-height: 1.6;
+    position: relative;
+}
+
+.banner-hero-btn-wrapper {
+    margin-top: 1.5rem;
+}
+
+.banner-hero-btn-wrapper .btn {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.banner-hero-btn-wrapper .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.4);
 }
 
 /* Store Hero Section Styles */
@@ -322,6 +469,75 @@ main > .container {
 /* Form Input Styles */
 .id-number-input {
     text-transform: uppercase;
+}
+
+/* Mobile optimizations for Banner Hero */
+@media (max-width: 768px) {
+    .banner-hero-wrapper {
+        margin-left: 0;
+        margin-right: 0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .banner-hero {
+        height: 200px;
+    }
+    
+    .banner-hero-overlay {
+        padding: 0;
+    }
+    
+    .banner-hero-content {
+        padding: 1rem 1.5rem;
+        border-top: 2px solid rgba(255, 255, 255, 0.8);
+        border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+    }
+    
+    .banner-hero-content h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .banner-hero-content p {
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+    
+    .banner-hero-btn-wrapper .btn {
+        padding: 0.5rem 1.25rem;
+        font-size: 0.9rem;
+        margin-top: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .banner-hero {
+        height: 200px;
+    }
+    
+    .banner-hero-content {
+        padding: 0.75rem 1rem;
+    }
+    
+    .banner-hero-content h1 {
+        font-size: 1.25rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .banner-hero-content p {
+        font-size: 0.85rem;
+        margin-bottom: 0;
+    }
+    
+    .banner-hero-overlay {
+        padding: 0;
+    }
+    
+    .banner-hero-btn-wrapper .btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
 }
 
 /* Mobile optimizations for Store Hero */
