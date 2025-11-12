@@ -22,7 +22,9 @@
                     <option value="all" {% if request.args.get('status', 'all') == 'all' %}selected{% endif %}>所有狀態</option>
                     <option value="待出租" {% if request.args.get('status') == '待出租' %}selected{% endif %}>待出租</option>
                     <option value="出租中" {% if request.args.get('status') == '出租中' %}selected{% endif %}>出租中</option>
-                    <option value="維修中" {% if request.args.get('status') == '維修中' %}selected{% endif %}>維修中</option>
+                    <option value="預訂" {% if request.args.get('status') == '預訂' %}selected{% endif %}>預訂</option>
+                    <option value="已出租" {% if request.args.get('status') == '已出租' %}selected{% endif %}>已出租</option>
+                    <option value="下架" {% if request.args.get('status') == '下架' %}selected{% endif %}>下架</option>
                 </select>
             </div>
             <div class="col-6 col-md-2">
@@ -50,6 +52,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>圖片</th>
                         <th>車牌號碼</th>
                         <th>機車型號</th>
                         <th>車款類型</th>
@@ -63,6 +66,20 @@
                         {% for motorcycle in motorcycles %}
                         <tr>
                             <td>{{ motorcycle.id }}</td>
+                            <td>
+                                {% if motorcycle.image_path %}
+                                    <img src="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}" 
+                                         alt="{{ motorcycle.model }}" 
+                                         class="img-thumbnail motorcycle-image" 
+                                         data-image-url="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}"
+                                         data-motorcycle-model="{{ motorcycle.model }}"
+                                         style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                                         data-bs-toggle="modal" 
+                                         data-bs-target="#imageModal">
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
                             <td>{{ motorcycle.license_plate }}</td>
                             <td>{{ motorcycle.model }}</td>
                             <td>{{ motorcycle.vehicle_type }}</td>
@@ -71,6 +88,12 @@
                                     <span class="badge bg-success">{{ motorcycle.status }}</span>
                                 {% elif motorcycle.status == '出租中' %}
                                     <span class="badge bg-warning">{{ motorcycle.status }}</span>
+                                {% elif motorcycle.status == '預訂' %}
+                                    <span class="badge bg-info">{{ motorcycle.status }}</span>
+                                {% elif motorcycle.status == '已出租' %}
+                                    <span class="badge bg-primary">{{ motorcycle.status }}</span>
+                                {% elif motorcycle.status == '下架' %}
+                                    <span class="badge bg-dark">{{ motorcycle.status }}</span>
                                 {% else %}
                                     <span class="badge bg-secondary">{{ motorcycle.status }}</span>
                                 {% endif %}
@@ -90,7 +113,7 @@
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="7" class="text-center text-muted">尚無資料</td>
+                            <td colspan="8" class="text-center text-muted">尚無資料</td>
                         </tr>
                     {% endif %}
                 </tbody>
@@ -98,4 +121,37 @@
         </div>
     </div>
 </div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">機車圖片</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-0">
+                <img id="modalImage" src="" alt="" class="img-fluid" style="max-height: 80vh; width: auto;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_extra_js %}
+<script>
+    $(document).ready(function() {
+        // Handle motorcycle image click to show in modal
+        $('.motorcycle-image').on('click', function() {
+            var imageUrl = $(this).data('image-url');
+            var model = $(this).data('motorcycle-model');
+            $('#modalImage').attr('src', imageUrl);
+            $('#modalImage').attr('alt', model);
+            $('#imageModalLabel').text(model || '機車圖片');
+        });
+    });
+</script>
 {% endblock %}

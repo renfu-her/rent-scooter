@@ -111,4 +111,34 @@ class MotorcycleController:
         motorcycle = MotorcycleController.get_by_id(motorcycle_id)
         db.session.delete(motorcycle)
         db.session.commit()
+    
+    @staticmethod
+    def reserve(motorcycle_id, reservation_status='預訂'):
+        """Reserve a motorcycle"""
+        from app.utils.timezone_utils import get_today_end
+        motorcycle = Motorcycle.query.get_or_404(motorcycle_id)
+        
+        # Track old status for WebSocket notification
+        old_status = motorcycle.status
+        
+        # Only allow reservation if status is '待出租'
+        if motorcycle.status != '待出租':
+            raise ValueError(f'機車狀態為 {motorcycle.status}，無法預訂')
+        
+        motorcycle.status = reservation_status
+        motorcycle.reservation_expires_at = get_today_end()
+        
+        db.session.commit()
+        
+        # Emit WebSocket notification
+        if old_status != reservation_status:
+            from app.utils.websocket_events import emit_motorcycle_status_change
+            emit_motorcycle_status_change(motorcycle.license_plate, old_status, reservation_status)
+        
+        return motorcycle
+    
+    @staticmethod
+    def get_by_id_public(motorcycle_id):
+        """Get motorcycle by ID for public access (no permission check)"""
+        return Motorcycle.query.get_or_404(motorcycle_id)
 

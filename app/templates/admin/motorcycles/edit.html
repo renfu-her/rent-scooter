@@ -58,7 +58,9 @@
                 <select class="form-select" id="status" name="status" required>
                     <option value="待出租" {% if motorcycle.status == '待出租' %}selected{% endif %}>待出租</option>
                     <option value="出租中" {% if motorcycle.status == '出租中' %}selected{% endif %}>出租中</option>
-                    <option value="維修中" {% if motorcycle.status == '維修中' %}selected{% endif %}>維修中</option>
+                    <option value="預訂" {% if motorcycle.status == '預訂' %}selected{% endif %}>預訂</option>
+                    <option value="已出租" {% if motorcycle.status == '已出租' %}selected{% endif %}>已出租</option>
+                    <option value="下架" {% if motorcycle.status == '下架' %}selected{% endif %}>下架</option>
                 </select>
             </div>
             

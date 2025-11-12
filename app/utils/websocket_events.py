@@ -28,6 +28,12 @@ def emit_motorcycle_status_change(license_plate, old_status, new_status):
         elif new_status == '待出租':
             message = f'車牌 {license_plate} 已經歸還'
             message_type = 'returned'
+        elif new_status == '預訂':
+            message = f'車牌 {license_plate} 已預訂'
+            message_type = 'reserved'
+        elif new_status == '已出租':
+            message = f'車牌 {license_plate} 已出租'
+            message_type = 'rented'
         elif new_status == '維修中':
             message = f'車牌 {license_plate} 已送修'
             message_type = 'maintenance'
