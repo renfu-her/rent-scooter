@@ -21,8 +21,8 @@
                 <select class="form-select" name="status">
                     <option value="all" {% if request.args.get('status', 'all') == 'all' %}selected{% endif %}>所有狀態</option>
                     <option value="待處理" {% if request.args.get('status') == '待處理' %}selected{% endif %}>待處理</option>
-                    <option value="進行中" {% if request.args.get('status') == '進行中' %}selected{% endif %}>進行中</option>
-                    <option value="已完成" {% if request.args.get('status') == '已完成' %}selected{% endif %}>已完成</option>
+                    <option value="已出租" {% if request.args.get('status') == '已出租' %}selected{% endif %}>已出租</option>
+                    <option value="已歸還" {% if request.args.get('status') == '已歸還' %}selected{% endif %}>已歸還</option>
                     <option value="已取消" {% if request.args.get('status') == '已取消' %}selected{% endif %}>已取消</option>
                 </select>
             </div>
@@ -81,12 +81,14 @@
                             </td>
                             <td>NT$ {{ order.total_amount | int if order.total_amount else 0 }}</td>
                             <td>
-                                {% if order.status == '已完成' %}
-                                    <span class="badge bg-success">{{ order.status }}</span>
-                                {% elif order.status == '進行中' %}
-                                    <span class="badge bg-primary">{{ order.status }}</span>
-                                {% elif order.status == '待處理' %}
+                                {% if order.status == '待處理' %}
                                     <span class="badge bg-warning">{{ order.status }}</span>
+                                {% elif order.status == '已出租' %}
+                                    <span class="badge bg-primary">{{ order.status }}</span>
+                                {% elif order.status == '已歸還' %}
+                                    <span class="badge bg-success">{{ order.status }}</span>
+                                {% elif order.status == '已取消' %}
+                                    <span class="badge bg-secondary">{{ order.status }}</span>
                                 {% else %}
                                     <span class="badge bg-secondary">{{ order.status }}</span>
                                 {% endif %}

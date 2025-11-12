@@ -67,14 +67,22 @@ class OrderController:
                     motorcycle_id=motorcycle_id
                 )
                 db.session.add(order_motorcycle)
-                # Update motorcycle status
+                # Update motorcycle status based on order status
                 motorcycle = Motorcycle.query.get(motorcycle_id)
                 if motorcycle:
                     old_status = motorcycle.status
-                    motorcycle.status = '出租中'
+                    # 待處理 -> 預訂, 已出租 -> 已出租, 已歸還/已取消 -> 待出租
+                    if status == '待處理':
+                        motorcycle.status = '預訂'
+                    elif status == '已出租':
+                        motorcycle.status = '已出租'
+                    elif status in ('已歸還', '已取消'):
+                        motorcycle.status = '待出租'
+                    else:
+                        motorcycle.status = '預訂'  # Default to 預訂 for new orders
                     # Store status change to emit after commit
-                    if old_status != '出租中':
-                        status_changes.append((motorcycle.license_plate, old_status, '出租中'))
+                    if old_status != motorcycle.status:
+                        status_changes.append((motorcycle.license_plate, old_status, motorcycle.status))
         
         db.session.commit()
         
@@ -91,13 +99,18 @@ class OrderController:
         """Update order"""
         order = Order.query.get_or_404(order_id)
         
-        # Update fields
+        # Get new status if it's being updated
+        new_status = kwargs.get('status', order.status)
+        
+        # Update fields (except motorcycle_ids, which is handled separately)
         for key, value in kwargs.items():
-            if hasattr(order, key) and value is not None:
+            if key != 'motorcycle_ids' and hasattr(order, key) and value is not None:
                 setattr(order, key, value)
         
         # Handle motorcycle updates
         status_changes = []  # Track status changes to emit after commit
+        
+        # If motorcycle_ids is being updated, handle it first
         if 'motorcycle_ids' in kwargs and kwargs['motorcycle_ids'] is not None:
             # Remove old associations
             OrderMotorcycle.query.filter_by(order_id=order.id).delete()
@@ -108,18 +121,47 @@ class OrderController:
                     motorcycle_id=motorcycle_id
                 )
                 db.session.add(order_motorcycle)
-                # Update motorcycle status
+                # Update motorcycle status based on order status (use new_status if status is being updated)
                 motorcycle = Motorcycle.query.get(motorcycle_id)
                 if motorcycle:
                     old_status = motorcycle.status
-                    motorcycle.status = '出租中'
+                    # 待處理 -> 預訂, 已出租 -> 已出租, 已歸還/已取消 -> 待出租
+                    if new_status == '待處理':
+                        motorcycle.status = '預訂'
+                    elif new_status == '已出租':
+                        motorcycle.status = '已出租'
+                    elif new_status in ('已歸還', '已取消'):
+                        motorcycle.status = '待出租'
+                    else:
+                        motorcycle.status = '預訂'  # Default
                     # Store status change to emit after commit
-                    if old_status != '出租中':
-                        status_changes.append((motorcycle.license_plate, old_status, '出租中'))
-        
-        # Auto-update motorcycle status based on order status
-        if 'status' in kwargs:
-            if kwargs['status'] in ('已完成', '已取消'):
+                    if old_status != motorcycle.status:
+                        status_changes.append((motorcycle.license_plate, old_status, motorcycle.status))
+        elif 'status' in kwargs:
+            # If only status is being updated (not motorcycle_ids), update all existing motorcycles
+            new_order_status = kwargs['status']
+            # 待處理 -> 預訂, 已出租 -> 已出租, 已歸還/已取消 -> 待出租
+            if new_order_status == '待處理':
+                # Set motorcycles to reserved
+                for om in order.motorcycles:
+                    motorcycle = Motorcycle.query.get(om.motorcycle_id)
+                    if motorcycle:
+                        old_status = motorcycle.status
+                        motorcycle.status = '預訂'
+                        # Store status change to emit after commit
+                        if old_status != '預訂':
+                            status_changes.append((motorcycle.license_plate, old_status, '預訂'))
+            elif new_order_status == '已出租':
+                # Set motorcycles to rented
+                for om in order.motorcycles:
+                    motorcycle = Motorcycle.query.get(om.motorcycle_id)
+                    if motorcycle:
+                        old_status = motorcycle.status
+                        motorcycle.status = '已出租'
+                        # Store status change to emit after commit
+                        if old_status != '已出租':
+                            status_changes.append((motorcycle.license_plate, old_status, '已出租'))
+            elif new_order_status in ('已歸還', '已取消'):
                 # Set motorcycles back to available
                 for om in order.motorcycles:
                     motorcycle = Motorcycle.query.get(om.motorcycle_id)
@@ -129,16 +171,6 @@ class OrderController:
                         # Store status change to emit after commit
                         if old_status != '待出租':
                             status_changes.append((motorcycle.license_plate, old_status, '待出租'))
-            elif kwargs['status'] == '進行中':
-                # Set motorcycles to rented
-                for om in order.motorcycles:
-                    motorcycle = Motorcycle.query.get(om.motorcycle_id)
-                    if motorcycle:
-                        old_status = motorcycle.status
-                        motorcycle.status = '出租中'
-                        # Store status change to emit after commit
-                        if old_status != '出租中':
-                            status_changes.append((motorcycle.license_plate, old_status, '出租中'))
         
         db.session.commit()
         

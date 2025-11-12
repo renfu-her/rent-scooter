@@ -75,11 +75,6 @@
                     {% endfor %}
                 </select>
             </div>
-            
-            <div class="col-md-6 mb-3">
-                <label for="renter_id" class="form-label">承租人（舊欄位，選填）</label>
-                <input type="text" class="form-control" id="renter_id" name="renter_id" placeholder="保留向後兼容">
-            </div>
         </div>
         
         <hr>
@@ -152,8 +147,8 @@
                 <label for="status" class="form-label">狀態 <span class="text-danger">*</span></label>
                 <select class="form-select" id="status" name="status" required>
                     <option value="待處理">待處理</option>
-                    <option value="進行中">進行中</option>
-                    <option value="已完成">已完成</option>
+                    <option value="已出租">已出租</option>
+                    <option value="已歸還">已歸還</option>
                     <option value="已取消">已取消</option>
                 </select>
             </div>

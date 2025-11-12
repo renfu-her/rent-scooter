@@ -14,7 +14,7 @@ class Order(db.Model):
     has_license = db.Column(db.Boolean, nullable=True)  # 是否有駕照
     rental_plan_id = db.Column(db.Integer, nullable=True)  # 租賃方案
     total_amount = db.Column(db.Numeric(10, 2), nullable=False)
-    status = db.Column(db.String(20), default='待處理', nullable=False)  # 待處理, 進行中, 已完成, 已取消
+    status = db.Column(db.String(20), default='待處理', nullable=False)  # 待處理, 已出租, 已歸還, 已取消
     reservation_date = db.Column(db.Date, nullable=False)
     rental_start_time = db.Column(db.DateTime, nullable=True)
     rental_end_time = db.Column(db.DateTime, nullable=True)

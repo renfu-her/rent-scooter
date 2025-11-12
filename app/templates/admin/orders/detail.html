@@ -61,12 +61,24 @@
     
     <div class="detail-group">
         <div class="detail-label">總金額</div>
-        <div class="detail-value">NT$ {{ order.total_amount }}</div>
+        <div class="detail-value">NT$ {{ order.total_amount | int if order.total_amount else 0 }}</div>
     </div>
     
     <div class="detail-group">
         <div class="detail-label">狀態</div>
-        <div class="detail-value">{{ order.status }}</div>
+        <div class="detail-value">
+            {% if order.status == '待處理' %}
+                <span class="badge bg-warning">{{ order.status }}</span>
+            {% elif order.status == '已出租' %}
+                <span class="badge bg-primary">{{ order.status }}</span>
+            {% elif order.status == '已歸還' %}
+                <span class="badge bg-success">{{ order.status }}</span>
+            {% elif order.status == '已取消' %}
+                <span class="badge bg-secondary">{{ order.status }}</span>
+            {% else %}
+                <span class="badge bg-secondary">{{ order.status }}</span>
+            {% endif %}
+        </div>
     </div>
     
     <div class="detail-group">

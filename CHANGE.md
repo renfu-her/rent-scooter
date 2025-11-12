@@ -2,7 +2,58 @@
 
 本文檔記錄專案的所有重要修改和功能更新。
 
-**最後更新時間：2025-11-12 16:23:27**
+**最後更新時間：2025-11-12 16:33:10**
+
+---
+
+## 2025-11-12 16:33 - 更新訂單狀態為四個狀態並對應機車狀態
+
+### 修改內容
+- **訂單狀態更新**：將訂單狀態從「待處理、進行中、已完成、已取消」改為「待處理、已出租、已歸還、已取消」
+- **機車狀態對應**：
+  - 訂單「待處理」→ 機車「預訂」
+  - 訂單「已出租」→ 機車「已出租」
+  - 訂單「已歸還」→ 機車「待出租」
+  - 訂單「已取消」→ 機車「待出租」
+
+### 修改檔案
+- `app/models/order.py`：更新狀態註釋
+- `app/controllers/order_controller.py`：
+  - 更新 `create` 方法：根據訂單狀態設置對應的機車狀態
+  - 更新 `update` 方法：優化狀態更新邏輯，確保同時更新 motorcycle_ids 和 status 時使用正確的狀態
+- `app/templates/admin/orders/index.html`：更新狀態選項和 badge 顯示
+- `app/templates/admin/orders/create.html`：更新狀態選項
+- `app/templates/admin/orders/edit.html`：更新狀態選項
+- `app/templates/admin/orders/detail.html`：更新狀態 badge 顯示
+
+### 狀態顯示顏色
+- 待處理：黃色 (bg-warning)
+- 已出租：藍色 (bg-primary)
+- 已歸還：綠色 (bg-success)
+- 已取消：灰色 (bg-secondary)
+
+### 說明
+- 訂單狀態更符合實際業務流程
+- 機車狀態與訂單狀態自動同步，確保數據一致性
+- 當訂單狀態變更時，相關機車狀態會自動更新並通過 WebSocket 通知前端
+
+---
+
+## 2025-11-12 16:25 - 移除訂單管理中的舊欄位
+
+### 修改內容
+- **表單簡化**：移除訂單創建和編輯表單中的「承租人（舊欄位，選填）」欄位
+  - 訂單創建表單：移除 `renter_id` 輸入框
+  - 訂單編輯表單：移除 `renter_id` 輸入框
+  - 保留「承租人資訊」區塊（包含姓名、身份證號碼、是否有駕照）
+
+### 修改檔案
+- `app/templates/admin/orders/create.html`
+- `app/templates/admin/orders/edit.html`
+
+### 說明
+- 舊的 `renter_id` 欄位已不再使用，現在統一使用「承租人資訊」區塊中的詳細欄位
+- 表單更加簡潔，避免混淆
 
 ---
 
