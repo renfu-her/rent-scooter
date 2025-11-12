@@ -26,6 +26,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 60px;
 }
 
 .logo {
@@ -34,6 +35,9 @@ header {
     color: white;
     text-decoration: none;
     transition: opacity 0.3s;
+    display: flex;
+    align-items: center;
+    height: 100%;
 }
 
 .logo:hover {
@@ -42,10 +46,26 @@ header {
     text-decoration: none;
 }
 
+nav {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
 nav ul {
     list-style: none;
     display: flex;
     gap: 20px;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+nav ul li {
+    display: flex;
+    align-items: center;
+    height: 100%;
 }
 
 nav a {
@@ -66,7 +86,8 @@ nav .nav-link {
     padding: 8px 15px;
     border-radius: 5px;
     transition: background 0.3s;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
 }
 
 nav .nav-link:hover {
