@@ -41,8 +41,22 @@
     </div>
     
     <div class="detail-group">
-        <div class="detail-label">承租人</div>
-        <div class="detail-value">{{ order.renter_id or '-' }}</div>
+        <div class="detail-label">承租人資訊</div>
+        <div class="detail-value">
+            {% if order.renter_name %}
+                <p><strong>姓名：</strong>{{ order.renter_name }}</p>
+                {% if order.renter_id_number %}
+                    <p><strong>身份證號碼：</strong>{{ order.renter_id_number }}</p>
+                {% endif %}
+                {% if order.has_license is not none %}
+                    <p><strong>是否有駕照：</strong>{{ '有' if order.has_license else '沒有' }}</p>
+                {% endif %}
+            {% elif order.renter_id %}
+                <p>{{ order.renter_id }}</p>
+            {% else %}
+                <p class="text-muted">-</p>
+            {% endif %}
+        </div>
     </div>
     
     <div class="detail-group">

@@ -75,10 +75,44 @@
             </div>
             
             <div class="col-md-6 mb-3">
-                <label for="renter_id" class="form-label">承租人</label>
-                <input type="text" class="form-control" id="renter_id" name="renter_id">
+                <label for="renter_id" class="form-label">承租人（舊欄位，選填）</label>
+                <input type="text" class="form-control" id="renter_id" name="renter_id" placeholder="保留向後兼容">
             </div>
         </div>
+        
+        <hr>
+        <h5 class="mb-3">承租人資訊</h5>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="renter_name" class="form-label">承租人姓名</label>
+                <input type="text" class="form-control" id="renter_name" name="renter_name" placeholder="請輸入姓名">
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <label for="renter_id_number" class="form-label">身份證號碼</label>
+                <input type="text" class="form-control" id="renter_id_number" name="renter_id_number" 
+                       placeholder="請輸入身份證號碼（例：A123456789）" 
+                       maxlength="10"
+                       style="text-transform: uppercase;"
+                       oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 10);">
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">是否有駕照</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="has_license" id="has_license_yes" value="true">
+                    <label class="form-check-label" for="has_license_yes">有</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="has_license" id="has_license_no" value="false">
+                    <label class="form-check-label" for="has_license_no">沒有</label>
+                </div>
+            </div>
+        </div>
+        
+        <hr>
         
         <div class="mb-3">
             <label for="rental_motorcycle" class="form-label">租借機車 <span class="text-danger">*</span></label>

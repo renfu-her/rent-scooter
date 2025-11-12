@@ -54,6 +54,9 @@ def create():
             OrderController.create(
                 partner_id=int(request.form.get('partner_id')) if request.form.get('partner_id') else None,
                 renter_id=request.form.get('renter_id') or None,
+                renter_name=request.form.get('renter_name') or None,
+                renter_id_number=request.form.get('renter_id_number') or None,
+                has_license=request.form.get('has_license') == 'true' if request.form.get('has_license') else None,
                 rental_plan_id=int(request.form.get('rental_plan_id')) if request.form.get('rental_plan_id') else None,
                 total_amount=float(request.form.get('total_amount', 0)),
                 status=request.form.get('status', '待處理'),

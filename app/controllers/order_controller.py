@@ -22,7 +22,8 @@ class OrderController:
         return Order.query.get_or_404(order_id)
     
     @staticmethod
-    def create(partner_id=None, renter_id=None, rental_plan_id=None,
+    def create(partner_id=None, renter_id=None, renter_name=None, renter_id_number=None, 
+               has_license=None, rental_plan_id=None,
                total_amount=0, status='待處理', reservation_date=None,
                rental_start_time=None, rental_end_time=None,
                shipping_company=None, ferry_departure_time=None,
@@ -37,6 +38,9 @@ class OrderController:
             order_number=OrderController.generate_order_number(),
             partner_id=partner_id,
             renter_id=renter_id,
+            renter_name=renter_name,
+            renter_id_number=renter_id_number,
+            has_license=has_license,
             rental_plan_id=rental_plan_id,
             total_amount=total_amount,
             status=status,

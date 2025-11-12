@@ -53,6 +53,7 @@
                         <th>ID</th>
                         <th>訂單編號</th>
                         <th>合作商</th>
+                        <th>承租人</th>
                         <th>總金額</th>
                         <th>狀態</th>
                         <th>建立時間</th>
@@ -66,6 +67,18 @@
                             <td>{{ order.id }}</td>
                             <td>{{ order.order_number }}</td>
                             <td>{{ order.partner.name if order.partner else '-' }}</td>
+                            <td>
+                                {% if order.renter_name %}
+                                    {{ order.renter_name }}
+                                    {% if order.renter_id_number %}
+                                        <br><small class="text-muted">{{ order.renter_id_number }}</small>
+                                    {% endif %}
+                                {% elif order.renter_id %}
+                                    {{ order.renter_id }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
                             <td>NT$ {{ order.total_amount }}</td>
                             <td>
                                 {% if order.status == '已完成' %}
@@ -88,7 +101,7 @@
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="7" class="text-center text-muted">尚無資料</td>
+                            <td colspan="8" class="text-center text-muted">尚無資料</td>
                         </tr>
                     {% endif %}
                 </tbody>

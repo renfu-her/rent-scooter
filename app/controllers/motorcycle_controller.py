@@ -113,9 +113,11 @@ class MotorcycleController:
         db.session.commit()
     
     @staticmethod
-    def reserve(motorcycle_id, reservation_status='預訂'):
-        """Reserve a motorcycle"""
+    def reserve(motorcycle_id, renter_name, renter_id_number, has_license, reservation_status='預訂', contact_phone=None, remarks=None):
+        """Reserve a motorcycle with customer information"""
         from app.utils.timezone_utils import get_today_end
+        from app.models.reservation import Reservation
+        
         motorcycle = Motorcycle.query.get_or_404(motorcycle_id)
         
         # Track old status for WebSocket notification
@@ -125,6 +127,27 @@ class MotorcycleController:
         if motorcycle.status != '待出租':
             raise ValueError(f'機車狀態為 {motorcycle.status}，無法預訂')
         
+        # Validate license requirement based on vehicle type
+        if not has_license:
+            if motorcycle.vehicle_type in ('白牌', '綠牌'):
+                raise ValueError(f'此車款類型（{motorcycle.vehicle_type}）需要駕照，無法預訂')
+            elif motorcycle.vehicle_type != '電輔車':
+                raise ValueError(f'此車款類型（{motorcycle.vehicle_type}）需要駕照，無法預訂')
+        
+        # Create reservation record
+        reservation = Reservation(
+            motorcycle_id=motorcycle_id,
+            renter_name=renter_name,
+            renter_id_number=renter_id_number,
+            has_license=has_license,
+            reservation_status=reservation_status,
+            reservation_expires_at=get_today_end(),
+            contact_phone=contact_phone,
+            remarks=remarks
+        )
+        db.session.add(reservation)
+        
+        # Update motorcycle status
         motorcycle.status = reservation_status
         motorcycle.reservation_expires_at = get_today_end()
         

@@ -8,7 +8,10 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_number = db.Column(db.String(50), unique=True, nullable=False, index=True)
     partner_id = db.Column(db.Integer, db.ForeignKey('partners.id'), nullable=True)
-    renter_id = db.Column(db.String(200), nullable=True)  # 承租人 (text field)
+    renter_id = db.Column(db.String(200), nullable=True)  # 承租人 (text field) - 保留向後兼容
+    renter_name = db.Column(db.String(100), nullable=True)  # 承租人姓名
+    renter_id_number = db.Column(db.String(20), nullable=True)  # 身份證號碼
+    has_license = db.Column(db.Boolean, nullable=True)  # 是否有駕照
     rental_plan_id = db.Column(db.Integer, nullable=True)  # 租賃方案
     total_amount = db.Column(db.Numeric(10, 2), nullable=False)
     status = db.Column(db.String(20), default='待處理', nullable=False)  # 待處理, 進行中, 已完成, 已取消

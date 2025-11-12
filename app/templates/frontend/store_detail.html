@@ -284,6 +284,74 @@
 
 {% block extra_js %}
 <script>
+    // Taiwan ID number validation function
+    function validateTaiwanId(idNumber) {
+        if (!idNumber) {
+            alert('請輸入身份證號碼');
+            $('#renterIdNumber').focus();
+            return false;
+        }
+        
+        // Check length
+        if (idNumber.length !== 10) {
+            alert('身份證號碼必須為10碼');
+            $('#renterIdNumber').focus();
+            return false;
+        }
+        
+        // Check first character is a letter
+        if (!/^[A-Z]$/.test(idNumber[0])) {
+            alert('身份證號碼第一碼必須為英文字母');
+            $('#renterIdNumber').focus();
+            return false;
+        }
+        
+        // Check second character is 1 or 2
+        if (idNumber[1] !== '1' && idNumber[1] !== '2') {
+            alert('身份證號碼第二碼必須為1或2');
+            $('#renterIdNumber').focus();
+            return false;
+        }
+        
+        // Check remaining characters are digits
+        if (!/^\d{8}$/.test(idNumber.substring(2))) {
+            alert('身份證號碼第3-10碼必須為數字');
+            $('#renterIdNumber').focus();
+            return false;
+        }
+        
+        // Calculate checksum
+        // Letter mapping: A=10, B=11, C=12, ..., Z=33
+        var letterCode = idNumber.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+        
+        // Split letter code into tens and ones
+        var letterTens = Math.floor(letterCode / 10);
+        var letterOnes = letterCode % 10;
+        
+        // Get digits
+        var digits = [];
+        for (var i = 1; i < idNumber.length; i++) {
+            digits.push(parseInt(idNumber[i]));
+        }
+        
+        // Calculate checksum
+        // Formula: (letter_tens*1 + letter_ones*9 + digit[0]*8 + digit[1]*7 + ... + digit[8]*1) % 10 == 0
+        var weights = [1, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+        var checksum = letterTens * weights[0] + letterOnes * weights[1];
+        
+        for (var i = 0; i < digits.length; i++) {
+            checksum += digits[i] * weights[i + 2];
+        }
+        
+        if (checksum % 10 !== 0) {
+            alert('身份證號碼檢查碼錯誤，請確認身份證號碼是否正確');
+            $('#renterIdNumber').focus();
+            return false;
+        }
+        
+        return true;
+    }
+    
     $(document).ready(function() {
         var currentMotorcycleId = null;
         
@@ -312,13 +380,28 @@
                 success: function(data) {
                     var imageHtml = '';
                     if (data.image_path) {
-                        // Construct image URL - remove 'motorcycles/' prefix if present
-                        var imagePath = data.image_path.startsWith('motorcycles/') ? data.image_path.substring(12) : data.image_path;
+                        // Construct image URL using the same format as the template
+                        // image_path might be stored as 'motorcycles/filename.webp' or just 'filename.webp'
+                        var imagePath = data.image_path;
+                        // Ensure we have the correct path format
+                        if (!imagePath.startsWith('motorcycles/')) {
+                            imagePath = 'motorcycles/' + imagePath;
+                        }
                         var imageUrl = '/backend/motorcycles/uploads/' + imagePath;
-                        imageHtml = '<img src="' + imageUrl + '" class="img-fluid rounded mb-3" style="max-height: 300px; width: auto;" alt="' + data.model + '">';
+                        imageHtml = '<img src="' + imageUrl + '" class="img-fluid rounded mb-3" style="max-height: 300px; width: auto;" alt="' + data.model + '" onerror="this.style.display=\'none\'">';
+                    } else {
+                        // Show placeholder if no image
+                        imageHtml = '<div class="bg-light d-flex align-items-center justify-content-center rounded mb-3" style="height: 200px;"><i class="bi bi-image text-muted" style="font-size: 3rem;"></i></div>';
                     }
                     
                     var colorHtml = data.color ? '<p><strong>顏色：</strong>' + data.color + '</p>' : '';
+                    
+                    // Check if license is required
+                    var requiresLicense = data.vehicle_type === '白牌' || data.vehicle_type === '綠牌';
+                    var licenseWarningHtml = '';
+                    if (requiresLicense) {
+                        licenseWarningHtml = '<div class="alert alert-warning mt-2"><i class="bi bi-exclamation-triangle me-1"></i>此車款類型需要駕照</div>';
+                    }
                     
                     var content = `
                         <div class="text-center mb-3">
@@ -333,6 +416,36 @@
                         </div>
                         <hr>
                         <div class="mb-3">
+                            <label for="renterName" class="form-label"><strong>承租人姓名 <span class="text-danger">*</span></strong></label>
+                            <input type="text" class="form-control" id="renterName" placeholder="請輸入姓名" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="renterIdNumber" class="form-label"><strong>身份證號碼 <span class="text-danger">*</span></strong></label>
+                            <input type="text" class="form-control" id="renterIdNumber" 
+                                   placeholder="請輸入身份證號碼（例：A123456789）" 
+                                   required 
+                                   maxlength="10"
+                                   style="text-transform: uppercase;"
+                                   oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 10);">
+                            <small class="form-text text-muted">格式：1個英文字母 + 1個數字(1或2) + 8個數字</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>是否有駕照 <span class="text-danger">*</span></strong></label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="hasLicense" id="hasLicenseYes" value="true" ${requiresLicense ? 'checked' : ''}>
+                                <label class="form-check-label" for="hasLicenseYes">有</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="hasLicense" id="hasLicenseNo" value="false" ${requiresLicense ? '' : 'checked'}>
+                                <label class="form-check-label" for="hasLicenseNo">沒有</label>
+                            </div>
+                            ${licenseWarningHtml}
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactPhone" class="form-label">聯絡電話</label>
+                            <input type="tel" class="form-control" id="contactPhone" placeholder="選填">
+                        </div>
+                        <div class="mb-3">
                             <label for="reservationStatus" class="form-label"><strong>預訂狀態</strong></label>
                             <select class="form-select" id="reservationStatus">
                                 <option value="預訂" selected>預訂</option>
@@ -341,8 +454,29 @@
                             </select>
                             <small class="form-text text-muted">預訂狀態將在當天 23:59:59 到期，如未更新為「已出租」將自動恢復為「待出租」</small>
                         </div>
+                        <div class="mb-3">
+                            <label for="remarks" class="form-label">備註</label>
+                            <textarea class="form-control" id="remarks" rows="3" placeholder="選填"></textarea>
+                        </div>
                     `;
                     $('#reservationContent').html(content);
+                    
+                    // Add real-time validation for license requirement
+                    $('input[name="hasLicense"]').on('change', function() {
+                        var hasLicense = $(this).val() === 'true';
+                        var vehicleType = data.vehicle_type;
+                        var $warningDiv = $('.alert-warning');
+                        
+                        if (!hasLicense && (vehicleType === '白牌' || vehicleType === '綠牌')) {
+                            if ($warningDiv.length === 0) {
+                                $('input[name="hasLicense"]').closest('.mb-3').append('<div class="alert alert-danger mt-2"><i class="bi bi-exclamation-triangle me-1"></i>此車款類型需要駕照，無法預訂</div>');
+                            }
+                            $('#confirmReservationBtn').prop('disabled', true);
+                        } else {
+                            $('.alert-danger').remove();
+                            $('#confirmReservationBtn').prop('disabled', false);
+                        }
+                    });
                 },
                 error: function(xhr) {
                     $('#reservationContent').html('<div class="alert alert-danger">載入機車資料失敗</div>');
@@ -354,7 +488,43 @@
         $('#confirmReservationBtn').on('click', function() {
             if (!currentMotorcycleId) return;
             
+            // Validate form
+            var renterName = $('#renterName').val().trim();
+            var renterIdNumber = $('#renterIdNumber').val().trim();
+            var hasLicense = $('input[name="hasLicense"]:checked').val() === 'true';
             var status = $('#reservationStatus').val();
+            var contactPhone = $('#contactPhone').val().trim();
+            var remarks = $('#remarks').val().trim();
+            
+            // Check required fields
+            if (!renterName) {
+                alert('請輸入承租人姓名');
+                $('#renterName').focus();
+                return;
+            }
+            if (!renterIdNumber) {
+                alert('請輸入身份證號碼');
+                $('#renterIdNumber').focus();
+                return;
+            }
+            
+            // Validate license requirement
+            if (currentMotorcycleData) {
+                var requiresLicense = currentMotorcycleData.vehicle_type === '白牌' || currentMotorcycleData.vehicle_type === '綠牌';
+                if (!hasLicense && requiresLicense) {
+                    alert('此車款類型需要駕照，無法預訂');
+                    return;
+                }
+            }
+            
+            // Format ID number (uppercase, remove spaces)
+            renterIdNumber = renterIdNumber.trim().toUpperCase().replace(/\s/g, '');
+            
+            // Validate Taiwan ID number format and checksum
+            if (!validateTaiwanId(renterIdNumber)) {
+                return;
+            }
+            
             var $btn = $(this);
             $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>處理中...');
             
@@ -362,7 +532,14 @@
                 url: '/api/motorcycles/' + currentMotorcycleId + '/reserve',
                 method: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ status: status }),
+                data: JSON.stringify({
+                    renter_name: renterName,
+                    renter_id_number: renterIdNumber.toUpperCase(),
+                    has_license: hasLicense,
+                    status: status,
+                    contact_phone: contactPhone || null,
+                    remarks: remarks || null
+                }),
                 success: function(data) {
                     $('#reservationModal').modal('hide');
                     // Show success message

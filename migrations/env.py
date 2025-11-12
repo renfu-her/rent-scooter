@@ -19,6 +19,7 @@ from app.models.store import Store
 from app.models.motorcycle import Motorcycle
 from app.models.order import Order, OrderMotorcycle
 from app.models.banner import Banner
+from app.models.reservation import Reservation
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

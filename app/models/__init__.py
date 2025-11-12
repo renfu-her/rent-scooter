@@ -8,6 +8,7 @@ from app.models.store import Store
 from app.models.motorcycle import Motorcycle
 from app.models.order import Order, OrderMotorcycle
 from app.models.banner import Banner
+from app.models.reservation import Reservation
 
-__all__ = ['db', 'User', 'Partner', 'Store', 'Motorcycle', 'Order', 'OrderMotorcycle', 'Banner']
+__all__ = ['db', 'User', 'Partner', 'Store', 'Motorcycle', 'Order', 'OrderMotorcycle', 'Banner', 'Reservation']
 

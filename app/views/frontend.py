@@ -3,6 +3,7 @@ from app.controllers.store_controller import StoreController
 from app.controllers.motorcycle_controller import MotorcycleController
 from app.models.motorcycle import Motorcycle
 from app.utils.timezone_utils import check_expired_reservations
+from app.utils.id_validator import validate_taiwan_id, format_taiwan_id
 
 frontend_bp = Blueprint('frontend', __name__)
 
@@ -54,9 +55,35 @@ def reserve_motorcycle(motorcycle_id):
     """Reserve a motorcycle"""
     try:
         data = request.get_json()
-        reservation_status = data.get('status', '預訂')
         
-        motorcycle = MotorcycleController.reserve(motorcycle_id, reservation_status)
+        # Validate required fields
+        renter_name = data.get('renter_name', '').strip()
+        renter_id_number = data.get('renter_id_number', '').strip()
+        has_license = data.get('has_license', False)
+        reservation_status = data.get('status', '預訂')
+        contact_phone = data.get('contact_phone', '').strip() or None
+        remarks = data.get('remarks', '').strip() or None
+        
+        if not renter_name:
+            return jsonify({'error': '請輸入承租人姓名'}), 400
+        if not renter_id_number:
+            return jsonify({'error': '請輸入身份證號碼'}), 400
+        
+        # Format and validate Taiwan ID number
+        renter_id_number = format_taiwan_id(renter_id_number)
+        is_valid, error_msg = validate_taiwan_id(renter_id_number)
+        if not is_valid:
+            return jsonify({'error': error_msg}), 400
+        
+        motorcycle = MotorcycleController.reserve(
+            motorcycle_id=motorcycle_id,
+            renter_name=renter_name,
+            renter_id_number=renter_id_number,
+            has_license=has_license,
+            reservation_status=reservation_status,
+            contact_phone=contact_phone,
+            remarks=remarks
+        )
         
         return jsonify({
             'success': True,
