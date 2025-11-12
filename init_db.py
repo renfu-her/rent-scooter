@@ -11,6 +11,7 @@ with app.app_context():
     os.makedirs(upload_folder, exist_ok=True)
     os.makedirs(os.path.join(upload_folder, 'motorcycles'), exist_ok=True)
     os.makedirs(os.path.join(upload_folder, 'banners'), exist_ok=True)
+    os.makedirs(os.path.join(upload_folder, 'stores'), exist_ok=True)
     print('Upload directories created')
     
     # Try to create database if it doesn't exist
