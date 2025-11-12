@@ -6,8 +6,13 @@ from app import cache
 api_banners_bp = Blueprint('api_banners', __name__)
 
 
+def make_banners_cache_key():
+    """Generate cache key based on query parameters"""
+    active_only = request.args.get('active_only', 'false').lower()
+    return f'banners_list_active_{active_only}'
+
 @api_banners_bp.route('', methods=['GET'])
-@cache.cached(timeout=300, key_prefix='banners_list')  # 缓存5分钟
+@cache.cached(timeout=300, make_cache_key=make_banners_cache_key)  # 缓存5分钟，根据查询参数生成不同的缓存键
 def list_banners():
     """Get all banners (public endpoint)"""
     active_only = request.args.get('active_only', 'false').lower() == 'true'
@@ -54,8 +59,9 @@ def create_banner():
             display_order=data.get('display_order', 0),
             is_active=data.get('is_active', True)
         )
-        # 清除缓存
-        cache.delete('banners_list')
+        # 清除所有相关缓存
+        cache.delete('banners_list_active_true')
+        cache.delete('banners_list_active_false')
         return jsonify({
             'id': banner.id,
             'title': banner.title,
@@ -82,8 +88,9 @@ def update_banner(banner_id):
             display_order=data.get('display_order'),
             is_active=data.get('is_active')
         )
-        # 清除缓存
-        cache.delete('banners_list')
+        # 清除所有相关缓存
+        cache.delete('banners_list_active_true')
+        cache.delete('banners_list_active_false')
         return jsonify({
             'id': banner.id,
             'title': banner.title,
@@ -102,8 +109,9 @@ def delete_banner(banner_id):
     """Delete banner"""
     try:
         BannerController.delete(banner_id)
-        # 清除缓存
-        cache.delete('banners_list')
+        # 清除所有相关缓存
+        cache.delete('banners_list_active_true')
+        cache.delete('banners_list_active_false')
         return jsonify({'message': 'Banner deleted successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400
