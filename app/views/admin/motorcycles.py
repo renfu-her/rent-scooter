@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from app.controllers.motorcycle_controller import MotorcycleController
 from app.controllers.store_controller import StoreController
 from app.utils.decorators import store_admin_required
-from app.utils.image_processor import save_uploaded_image, allowed_file
+from app.utils.image_processor import save_uploaded_image, allowed_file, delete_image
 
 admin_motorcycles_bp = Blueprint('admin_motorcycles', __name__)
 
@@ -53,9 +53,14 @@ def edit(motorcycle_id):
     if request.method == 'POST':
         try:
             image_path = motorcycle.image_path
+            old_image_path = motorcycle.image_path  # Save old image path for deletion
             if 'image' in request.files:
                 file = request.files['image']
                 if file and file.filename and allowed_file(file.filename):
+                    # Delete old image if exists
+                    if old_image_path:
+                        delete_image(old_image_path)
+                    # Save new image
                     image_path = save_uploaded_image(file, 'motorcycles')
             
             MotorcycleController.update(

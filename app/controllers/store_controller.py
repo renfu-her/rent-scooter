@@ -14,15 +14,15 @@ class StoreController:
         return Store.query.get_or_404(store_id)
     
     @staticmethod
-    def create(name, address=None, phone=None):
+    def create(name, address=None, phone=None, image_path=None):
         """Create a new store"""
-        store = Store(name=name, address=address, phone=phone)
+        store = Store(name=name, address=address, phone=phone, image_path=image_path)
         db.session.add(store)
         db.session.commit()
         return store
     
     @staticmethod
-    def update(store_id, name=None, address=None, phone=None):
+    def update(store_id, name=None, address=None, phone=None, image_path=None):
         """Update store"""
         store = Store.query.get_or_404(store_id)
         if name:
@@ -31,6 +31,8 @@ class StoreController:
             store.address = address
         if phone is not None:
             store.phone = phone
+        if image_path is not None:
+            store.image_path = image_path
         db.session.commit()
         return store
     

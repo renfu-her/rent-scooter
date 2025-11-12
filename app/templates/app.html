@@ -3,7 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {# SEO Meta Tags #}
     <title>{% block title %}機車租借管理系統{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}機車租借管理系統 - 提供便捷的機車租借服務{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}機車租借,租車,機車,租借管理{% endblock %}">
+    <meta name="author" content="RENT 機車租借">
+    
+    {# Additional Meta Tags #}
+    {% block extra_meta %}{% endblock %}
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <style>
         * {
             margin: 0;
@@ -48,8 +62,8 @@
             background: rgba(255,255,255,0.1);
         }
         main {
-            max-width: 1200px;
-            margin: 20px auto;
+            /* max-width: 1200px;
+            margin: 20px auto; */
             padding: 0 20px;
         }
         footer {
@@ -88,6 +102,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    {% block body_content %}
     <header>
         <div class="header-container">
             <div class="logo">RENT 機車租借</div>
@@ -95,7 +110,7 @@
                 <ul>
                     <li><a href="{{ url_for('frontend.index') }}">首頁</a></li>
                     {% if current_user.is_authenticated %}
-                        <li><a href="{{ url_for('admin_motorcycles.index') }}">後台管理</a></li>
+                        <li><a href="{{ url_for('backend.index') }}">後台管理</a></li>
                         <li><a href="{{ url_for('auth.logout') }}">登出</a></li>
                     {% else %}
                         <li><a href="{{ url_for('auth.login') }}">登入</a></li>
@@ -104,7 +119,7 @@
             </nav>
         </div>
     </header>
-    
+
     <main>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -116,10 +131,17 @@
         
         {% block content %}{% endblock %}
     </main>
-    
+
     <footer>
         <p>&copy; 2024 機車租借管理系統. All rights reserved.</p>
     </footer>
+    {% endblock %}
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     
     {% block extra_js %}{% endblock %}
 </body>

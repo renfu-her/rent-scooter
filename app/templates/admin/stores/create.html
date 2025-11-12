@@ -2,22 +2,47 @@
 
 {% block admin_title %}新增商店 - 管理後台{% endblock %}
 
-{% block admin_content %}
-    <h1>新增商店</h1>
-    <form method="POST">
-        <div class="form-group">
-            <label for="name">商店名稱 *</label>
-            <input type="text" id="name" name="name" required>
-        </div>
-        <div class="form-group">
-            <label for="address">商店地址</label>
-            <input type="text" id="address" name="address">
-        </div>
-        <div class="form-group">
-            <label for="phone">電話</label>
-            <input type="text" id="phone" name="phone">
-        </div>
-        <button type="submit" class="btn">建立</button>
-        <a href="{{ url_for('admin_stores.index') }}" class="btn btn-secondary">取消</a>
-    </form>
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">新增商店</h1>
+    <a href="{{ url_for('admin_stores.index') }}" class="btn btn-link text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i>返回
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-4">
+                <label for="name" class="form-label">商店名稱 <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            
+            <div class="mb-4">
+                <label for="address" class="form-label">商店地址</label>
+                <input type="text" class="form-control" id="address" name="address">
+            </div>
+            
+            <div class="mb-4">
+                <label for="phone" class="form-label">電話</label>
+                <input type="tel" class="form-control" id="phone" name="phone">
+            </div>
+            
+            <div class="mb-4">
+                <label for="image" class="form-label">商店圖片</label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif">
+                <small class="form-text text-muted">建議尺寸:800×600 像素,最大 5MB</small>
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>儲存
+                </button>
+                <a href="{{ url_for('admin_stores.index') }}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle me-1"></i>取消
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

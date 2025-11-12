@@ -2,71 +2,100 @@
 
 {% block admin_title %}機車管理 - 管理後台{% endblock %}
 
-{% block admin_content %}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">機車管理</h1>
-        <a href="{{ url_for('admin_motorcycles.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> 新增機車
-        </a>
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">機車管理</h1>
+    <a href="{{ url_for('admin_motorcycles.create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>新增內容
+    </a>
+</div>
+
+<!-- Filter and Search -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-12 col-md-5">
+                <input type="text" class="form-control" name="search" placeholder="搜尋車牌、型號..." value="{{ request.args.get('search', '') }}">
+            </div>
+            <div class="col-6 col-md-2">
+                <select class="form-select" name="status">
+                    <option value="all" {% if request.args.get('status', 'all') == 'all' %}selected{% endif %}>所有狀態</option>
+                    <option value="待出租" {% if request.args.get('status') == '待出租' %}selected{% endif %}>待出租</option>
+                    <option value="出租中" {% if request.args.get('status') == '出租中' %}selected{% endif %}>出租中</option>
+                    <option value="維修中" {% if request.args.get('status') == '維修中' %}selected{% endif %}>維修中</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <select class="form-select" id="pageSize">
+                    <option value="10" selected>10 筆/頁</option>
+                    <option value="25">25 筆/頁</option>
+                    <option value="50">50 筆/頁</option>
+                    <option value="100">100 筆/頁</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-3">
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-search me-1"></i>搜尋
+                </button>
+            </div>
+        </form>
     </div>
-    
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>圖片</th>
-                    <th>車牌號碼</th>
-                    <th>機車型號</th>
-                    <th>顏色</th>
-                    <th>車款類型</th>
-                    <th>所屬商店</th>
-                    <th>狀態</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for motorcycle in motorcycles %}
-                <tr>
-                    <td>
-                        {% if motorcycle.image_path %}
-                            <img src="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}" 
-                                 alt="{{ motorcycle.license_plate }}" 
-                                 class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
-                        {% else %}
-                            <span class="text-muted">-</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ motorcycle.license_plate }}</td>
-                    <td>{{ motorcycle.model }}</td>
-                    <td>{{ motorcycle.color or '-' }}</td>
-                    <td>{{ motorcycle.vehicle_type }}</td>
-                    <td>{{ motorcycle.store.name if motorcycle.store else '-' }}</td>
-                    <td>
-                        {% if motorcycle.status == '待出租' %}
-                            <span class="badge bg-success">{{ motorcycle.status }}</span>
-                        {% elif motorcycle.status == '出租中' %}
-                            <span class="badge bg-warning">{{ motorcycle.status }}</span>
-                        {% else %}
-                            <span class="badge bg-secondary">{{ motorcycle.status }}</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{{ url_for('admin_motorcycles.edit', motorcycle_id=motorcycle.id) }}" class="btn btn-sm btn-primary">
-                            <i class="bi bi-pencil"></i> 編輯
-                        </a>
-                        <form method="POST" action="{{ url_for('admin_motorcycles.delete', motorcycle_id=motorcycle.id) }}" style="display: inline;" onsubmit="return confirm('確定要刪除嗎？');">
-                            <button type="submit" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash"></i> 刪除
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="8" class="text-center text-muted py-4">尚無資料</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+</div>
+
+<!-- Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>車牌號碼</th>
+                        <th>機車型號</th>
+                        <th>車款類型</th>
+                        <th>狀態</th>
+                        <th>建立時間</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if motorcycles %}
+                        {% for motorcycle in motorcycles %}
+                        <tr>
+                            <td>{{ motorcycle.id }}</td>
+                            <td>{{ motorcycle.license_plate }}</td>
+                            <td>{{ motorcycle.model }}</td>
+                            <td>{{ motorcycle.vehicle_type }}</td>
+                            <td>
+                                {% if motorcycle.status == '待出租' %}
+                                    <span class="badge bg-success">{{ motorcycle.status }}</span>
+                                {% elif motorcycle.status == '出租中' %}
+                                    <span class="badge bg-warning">{{ motorcycle.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ motorcycle.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ motorcycle.created_at.strftime('%Y/%m/%d') if motorcycle.created_at else '-' }}</td>
+                            <td>
+                                <a href="{{ url_for('admin_motorcycles.edit', motorcycle_id=motorcycle.id) }}" class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form method="POST" action="{{ url_for('admin_motorcycles.delete', motorcycle_id=motorcycle.id) }}" class="d-inline" onsubmit="return confirm('確定要刪除嗎？');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">尚無資料</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
     </div>
+</div>
 {% endblock %}

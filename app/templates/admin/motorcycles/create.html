@@ -2,54 +2,73 @@
 
 {% block admin_title %}新增機車 - 管理後台{% endblock %}
 
-{% block admin_content %}
-    <h1 class="mb-4">新增機車</h1>
-    <form method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="store_id" class="form-label">所屬商店 *</label>
-            <select class="form-select" id="store_id" name="store_id" required>
-                <option value="">選擇商店</option>
-                {% for store in stores %}
-                <option value="{{ store.id }}">{{ store.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="license_plate" class="form-label">車牌號碼 *</label>
-            <input type="text" class="form-control" id="license_plate" name="license_plate" required>
-        </div>
-        <div class="mb-3">
-            <label for="model" class="form-label">機車型號 *</label>
-            <input type="text" class="form-control" id="model" name="model" required>
-        </div>
-        <div class="mb-3">
-            <label for="color" class="form-label">顏色</label>
-            <select class="form-select" id="color" name="color">
-                <option value="">選擇顏色</option>
-                <option value="黑">黑</option>
-                <option value="白">白</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="vehicle_type" class="form-label">車款類型 *</label>
-            <select class="form-select" id="vehicle_type" name="vehicle_type" required>
-                <option value="">選擇車款類型</option>
-                <option value="白牌">白牌</option>
-                <option value="綠牌">綠牌</option>
-                <option value="電輔車">電輔車</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="image" class="form-label">機車圖片</label>
-            <input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif">
-        </div>
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-check-circle"></i> 建立
-            </button>
-            <a href="{{ url_for('admin_motorcycles.index') }}" class="btn btn-secondary">
-                <i class="bi bi-x-circle"></i> 取消
-            </a>
-        </div>
-    </form>
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">新增機車</h1>
+    <a href="{{ url_for('admin_motorcycles.index') }}" class="btn btn-link text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i>返回
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-4">
+                <label for="store_id" class="form-label">所屬商店 <span class="text-danger">*</span></label>
+                <select class="form-select" id="store_id" name="store_id" required>
+                    <option value="">選擇商店</option>
+                    {% for store in stores %}
+                    <option value="{{ store.id }}">{{ store.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label for="license_plate" class="form-label">車牌號碼 <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="license_plate" name="license_plate" required>
+            </div>
+            
+            <div class="mb-4">
+                <label for="model" class="form-label">機車型號 <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="model" name="model" required>
+            </div>
+            
+            <div class="mb-4">
+                <label for="color" class="form-label">顏色</label>
+                <select class="form-select" id="color" name="color">
+                    <option value="">選擇顏色</option>
+                    <option value="綠色">綠色</option>
+                    <option value="黃色">黃色</option>
+                    <option value="紅色">紅色</option>
+                    <option value="銀色">銀色</option>
+                    <option value="牛奶色">牛奶色</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label for="vehicle_type" class="form-label">車款類型 <span class="text-danger">*</span></label>
+                <select class="form-select" id="vehicle_type" name="vehicle_type" required>
+                    <option value="">選擇車款類型</option>
+                    <option value="白牌">白牌</option>
+                    <option value="綠牌">綠牌</option>
+                    <option value="電輔車">電輔車</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label for="image" class="form-label">機車圖片</label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif">
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>儲存
+                </button>
+                <a href="{{ url_for('admin_motorcycles.index') }}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle me-1"></i>取消
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

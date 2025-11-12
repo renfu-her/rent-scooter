@@ -9,6 +9,7 @@ class Store(db.Model):
     name = db.Column(db.String(200), nullable=False)
     address = db.Column(db.String(500), nullable=True)
     phone = db.Column(db.String(20), nullable=True)
+    image_path = db.Column(db.String(500), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     

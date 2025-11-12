@@ -19,10 +19,13 @@ class BannerController:
         return Banner.query.get_or_404(banner_id)
     
     @staticmethod
-    def create(title, image_path, link_url=None, display_order=0, is_active=True):
+    def create(banner_name=None, title=None, subtitle=None, image_path=None, 
+               link_url=None, display_order=0, is_active=True):
         """Create a new banner"""
         banner = Banner(
+            banner_name=banner_name,
             title=title,
+            subtitle=subtitle,
             image_path=image_path,
             link_url=link_url,
             display_order=display_order,
@@ -33,12 +36,16 @@ class BannerController:
         return banner
     
     @staticmethod
-    def update(banner_id, title=None, image_path=None, link_url=None,
-               display_order=None, is_active=None):
+    def update(banner_id, banner_name=None, title=None, subtitle=None, image_path=None, 
+               link_url=None, display_order=None, is_active=None):
         """Update banner"""
         banner = Banner.query.get_or_404(banner_id)
+        if banner_name is not None:
+            banner.banner_name = banner_name
         if title:
             banner.title = title
+        if subtitle is not None:
+            banner.subtitle = subtitle
         if image_path:
             banner.image_path = image_path
         if link_url is not None:

@@ -56,6 +56,7 @@ class OrderController:
         
         # Add motorcycles
         if motorcycle_ids:
+            from app.utils.websocket_events import emit_motorcycle_status_change
             for motorcycle_id in motorcycle_ids:
                 order_motorcycle = OrderMotorcycle(
                     order_id=order.id,
@@ -65,7 +66,11 @@ class OrderController:
                 # Update motorcycle status
                 motorcycle = Motorcycle.query.get(motorcycle_id)
                 if motorcycle:
+                    old_status = motorcycle.status
                     motorcycle.status = '出租中'
+                    # Emit WebSocket notification
+                    if old_status != '出租中':
+                        emit_motorcycle_status_change(motorcycle.license_plate, old_status, '出租中')
         
         db.session.commit()
         return order
@@ -81,6 +86,7 @@ class OrderController:
                 setattr(order, key, value)
         
         # Handle motorcycle updates
+        from app.utils.websocket_events import emit_motorcycle_status_change
         if 'motorcycle_ids' in kwargs:
             # Remove old associations
             OrderMotorcycle.query.filter_by(order_id=order.id).delete()
@@ -94,7 +100,11 @@ class OrderController:
                 # Update motorcycle status
                 motorcycle = Motorcycle.query.get(motorcycle_id)
                 if motorcycle:
+                    old_status = motorcycle.status
                     motorcycle.status = '出租中'
+                    # Emit WebSocket notification
+                    if old_status != '出租中':
+                        emit_motorcycle_status_change(motorcycle.license_plate, old_status, '出租中')
         
         # Auto-update motorcycle status based on order status
         if 'status' in kwargs:
@@ -103,13 +113,21 @@ class OrderController:
                 for om in order.motorcycles:
                     motorcycle = Motorcycle.query.get(om.motorcycle_id)
                     if motorcycle:
+                        old_status = motorcycle.status
                         motorcycle.status = '待出租'
+                        # Emit WebSocket notification
+                        if old_status != '待出租':
+                            emit_motorcycle_status_change(motorcycle.license_plate, old_status, '待出租')
             elif kwargs['status'] == '進行中':
                 # Set motorcycles to rented
                 for om in order.motorcycles:
                     motorcycle = Motorcycle.query.get(om.motorcycle_id)
                     if motorcycle:
+                        old_status = motorcycle.status
                         motorcycle.status = '出租中'
+                        # Emit WebSocket notification
+                        if old_status != '出租中':
+                            emit_motorcycle_status_change(motorcycle.license_plate, old_status, '出租中')
         
         db.session.commit()
         return order

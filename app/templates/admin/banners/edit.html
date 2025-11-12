@@ -1,54 +1,80 @@
 {% extends "admin/base.html" %}
 
-{% block admin_title %}編輯Banner - 管理後台{% endblock %}
+{% block admin_title %}編輯首頁 Banner - 管理後台{% endblock %}
 
-{% block admin_extra_css %}
-<style>
-    .current-image {
-        margin-top: 10px;
-    }
-    .current-image img {
-        max-width: 300px;
-        border-radius: 5px;
-    }
-    input[type="checkbox"] {
-        width: auto;
-    }
-</style>
-{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">編輯首頁 Banner</h1>
+    <a href="{{ url_for('admin_banners.index') }}" class="btn btn-link text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i>返回
+    </a>
+</div>
 
-{% block admin_content %}
-    <h1>編輯Banner</h1>
-    <form method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="title">標題 *</label>
-            <input type="text" id="title" name="title" value="{{ banner.title }}" required>
-        </div>
-        <div class="form-group">
-            <label for="image">圖片 (留空則不更新)</label>
-            <input type="file" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif">
-            {% if banner.image_path %}
-            <div class="current-image">
-                <p>目前圖片:</p>
-                <img src="{{ url_for('admin_banners.uploaded_file', filename=banner.image_path) }}" alt="Current image">
+<div class="card">
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-4">
+                <label for="banner_name" class="form-label">Banner 名稱 <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="banner_name" name="banner_name" value="{{ banner.banner_name or '' }}" required>
+                <small class="form-text text-muted">用於管理識別,不會顯示在前台</small>
             </div>
-            {% endif %}
-        </div>
-        <div class="form-group">
-            <label for="link_url">連結網址</label>
-            <input type="text" id="link_url" name="link_url" value="{{ banner.link_url or '' }}" placeholder="https://example.com">
-        </div>
-        <div class="form-group">
-            <label for="display_order">顯示順序</label>
-            <input type="number" id="display_order" name="display_order" value="{{ banner.display_order }}">
-        </div>
-        <div class="form-group">
-            <label>
-                <input type="checkbox" id="is_active" name="is_active" {% if banner.is_active %}checked{% endif %}>
-                啟用
-            </label>
-        </div>
-        <button type="submit" class="btn">更新</button>
-        <a href="{{ url_for('admin_banners.index') }}" class="btn btn-secondary">取消</a>
-    </form>
+            
+            <div class="mb-4">
+                <div class="row align-items-end">
+                    <div class="col-md-8">
+                        <label for="title" class="form-label">標題 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ banner.title }}" required>
+                        <small class="form-text text-muted">顯示在首頁的標題</small>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">狀態</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active" {% if banner.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">
+                                啟用
+                            </label>
+                        </div>
+                        <small class="form-text text-muted">只有啟用的 Banner 會顯示在首頁</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="subtitle" class="form-label">副標題</label>
+                <input type="text" class="form-control" id="subtitle" name="subtitle" value="{{ banner.subtitle or '' }}">
+                <small class="form-text text-muted">顯示在標題下方的副標題文字</small>
+            </div>
+            
+            <div class="mb-4">
+                <label for="link_url" class="form-label">連結</label>
+                <input type="url" class="form-control" id="link_url" name="link_url" value="{{ banner.link_url or '' }}" placeholder="https://example.com">
+                <small class="form-text text-muted">點擊 Banner 時跳轉的連結(可選)</small>
+            </div>
+            
+            <div class="mb-4">
+                <label for="image" class="form-label">Banner 圖片 <small class="text-muted">(留空則不更新)</small></label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif">
+                <small class="form-text text-muted">建議尺寸:1200×400 像素 (3:1比例),最大 5MB</small>
+                {% if banner.image_path %}
+                <div class="mt-2">
+                    <p class="text-muted mb-2">目前圖片:</p>
+                    <img src="{{ url_for('admin_banners.uploaded_file', filename=banner.image_path) }}" 
+                         alt="Current image" 
+                         class="img-thumbnail" 
+                         style="max-width: 300px;">
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>儲存
+                </button>
+                <a href="{{ url_for('admin_banners.index') }}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle me-1"></i>取消
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

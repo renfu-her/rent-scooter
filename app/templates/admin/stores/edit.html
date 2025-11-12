@@ -2,22 +2,56 @@
 
 {% block admin_title %}編輯商店 - 管理後台{% endblock %}
 
-{% block admin_content %}
-    <h1>編輯商店</h1>
-    <form method="POST">
-        <div class="form-group">
-            <label for="name">商店名稱 *</label>
-            <input type="text" id="name" name="name" value="{{ store.name }}" required>
-        </div>
-        <div class="form-group">
-            <label for="address">商店地址</label>
-            <input type="text" id="address" name="address" value="{{ store.address or '' }}">
-        </div>
-        <div class="form-group">
-            <label for="phone">電話</label>
-            <input type="text" id="phone" name="phone" value="{{ store.phone or '' }}">
-        </div>
-        <button type="submit" class="btn">更新</button>
-        <a href="{{ url_for('admin_stores.index') }}" class="btn btn-secondary">取消</a>
-    </form>
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">編輯商店</h1>
+    <a href="{{ url_for('admin_stores.index') }}" class="btn btn-link text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i>返回
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-4">
+                <label for="name" class="form-label">商店名稱 <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ store.name }}" required>
+            </div>
+            
+            <div class="mb-4">
+                <label for="address" class="form-label">商店地址</label>
+                <input type="text" class="form-control" id="address" name="address" value="{{ store.address or '' }}">
+            </div>
+            
+            <div class="mb-4">
+                <label for="phone" class="form-label">電話</label>
+                <input type="tel" class="form-control" id="phone" name="phone" value="{{ store.phone or '' }}">
+            </div>
+            
+            <div class="mb-4">
+                <label for="image" class="form-label">商店圖片 <small class="text-muted">(留空則不更新)</small></label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif">
+                <small class="form-text text-muted">建議尺寸:800×600 像素,最大 5MB</small>
+                {% if store.image_path %}
+                <div class="mt-2">
+                    <p class="text-muted mb-2">目前圖片:</p>
+                    <img src="{{ url_for('admin_stores.uploaded_file', filename=store.image_path) }}" 
+                         alt="Current image" 
+                         class="img-thumbnail" 
+                         style="max-width: 300px;">
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>儲存
+                </button>
+                <a href="{{ url_for('admin_stores.index') }}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle me-1"></i>取消
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

@@ -75,6 +75,9 @@ class MotorcycleController:
         """Update motorcycle"""
         motorcycle = MotorcycleController.get_by_id(motorcycle_id)
         
+        # Track old status for WebSocket notification
+        old_status = motorcycle.status
+        
         if store_id is not None:
             if current_user.is_store_admin() and store_id != current_user.store_id:
                 from flask import abort
@@ -94,6 +97,12 @@ class MotorcycleController:
             motorcycle.status = status
         
         db.session.commit()
+        
+        # Emit WebSocket notification if status changed
+        if status and status != old_status:
+            from app.utils.websocket_events import emit_motorcycle_status_change
+            emit_motorcycle_status_change(motorcycle.license_plate, old_status, status)
+        
         return motorcycle
     
     @staticmethod

@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, send_from_directory, current_app
 from app.controllers.store_controller import StoreController
 from app.utils.decorators import admin_required
+from app.utils.image_processor import save_uploaded_image, allowed_file, delete_image
 
 admin_stores_bp = Blueprint('admin_stores', __name__)
 
@@ -20,10 +21,17 @@ def create():
     """Create new store"""
     if request.method == 'POST':
         try:
+            image_path = None
+            if 'image' in request.files:
+                file = request.files['image']
+                if file and file.filename and allowed_file(file.filename):
+                    image_path = save_uploaded_image(file, 'stores')
+            
             StoreController.create(
                 name=request.form.get('name'),
                 address=request.form.get('address'),
-                phone=request.form.get('phone')
+                phone=request.form.get('phone'),
+                image_path=image_path
             )
             flash('商店建立成功', 'success')
             return redirect(url_for('admin_stores.index'))
@@ -39,11 +47,23 @@ def edit(store_id):
     store = StoreController.get_by_id(store_id)
     if request.method == 'POST':
         try:
+            image_path = store.image_path
+            old_image_path = store.image_path  # Save old image path for deletion
+            if 'image' in request.files:
+                file = request.files['image']
+                if file and file.filename and allowed_file(file.filename):
+                    # Delete old image if exists
+                    if old_image_path:
+                        delete_image(old_image_path)
+                    # Save new image
+                    image_path = save_uploaded_image(file, 'stores')
+            
             StoreController.update(
                 store_id,
                 name=request.form.get('name'),
                 address=request.form.get('address'),
-                phone=request.form.get('phone')
+                phone=request.form.get('phone'),
+                image_path=image_path
             )
             flash('商店更新成功', 'success')
             return redirect(url_for('admin_stores.index'))
@@ -57,8 +77,18 @@ def edit(store_id):
 def delete(store_id):
     """Delete store"""
     try:
+        store = StoreController.get_by_id(store_id)
+        # Delete image if exists
+        if store.image_path:
+            delete_image(store.image_path)
         StoreController.delete(store_id)
         flash('商店刪除成功', 'success')
     except Exception as e:
         flash(f'刪除失敗: {str(e)}', 'error')
     return redirect(url_for('admin_stores.index'))
+
+
+@admin_stores_bp.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    """Serve uploaded files"""
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)

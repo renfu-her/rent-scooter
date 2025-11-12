@@ -52,9 +52,17 @@
 </style>
 {% endblock %}
 
-{% block admin_content %}
-    <h1 class="mb-4">新增訂單</h1>
-    <form method="POST" id="orderForm">
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">新增訂單</h1>
+    <a href="{{ url_for('admin_orders.index') }}" class="btn btn-link text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i>返回
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" id="orderForm">
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="partner_id" class="form-label">合作商</label>
@@ -73,7 +81,7 @@
         </div>
         
         <div class="mb-3">
-            <label for="rental_motorcycle" class="form-label">租借機車 *</label>
+            <label for="rental_motorcycle" class="form-label">租借機車 <span class="text-danger">*</span></label>
             <div class="motorcycle-search">
                 <input type="text" class="form-control" id="motorcycle_search" placeholder="輸入車牌號碼搜尋" autocomplete="off">
                 <div id="search_results" class="search-results"></div>
@@ -88,7 +96,7 @@
         
         <div class="row">
             <div class="col-md-4 mb-3">
-                <label for="reservation_date" class="form-label">預約日期 *</label>
+                <label for="reservation_date" class="form-label">預約日期 <span class="text-danger">*</span></label>
                 <input type="date" class="form-control" id="reservation_date" name="reservation_date" required>
             </div>
             
@@ -105,7 +113,7 @@
         
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="status" class="form-label">狀態 *</label>
+                <label for="status" class="form-label">狀態 <span class="text-danger">*</span></label>
                 <select class="form-select" id="status" name="status" required>
                     <option value="待處理">待處理</option>
                     <option value="進行中">進行中</option>
@@ -115,7 +123,7 @@
             </div>
             
             <div class="col-md-6 mb-3">
-                <label for="total_amount" class="form-label">總金額 *</label>
+                <label for="total_amount" class="form-label">總金額 <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" id="total_amount" name="total_amount" step="0.01" required>
             </div>
         </div>
@@ -177,13 +185,15 @@
         
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary">
-                <i class="bi bi-check-circle"></i> 建立
+                <i class="bi bi-check-circle me-1"></i>儲存
             </button>
             <a href="{{ url_for('admin_orders.index') }}" class="btn btn-secondary">
-                <i class="bi bi-x-circle"></i> 取消
+                <i class="bi bi-x-circle me-1"></i>取消
             </a>
         </div>
-    </form>
+        </form>
+    </div>
+</div>
 {% endblock %}
 
 {% block admin_extra_js %}

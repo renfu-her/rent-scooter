@@ -1,0 +1,96 @@
+{% extends "app.html" %}
+
+{% block title %}{{ store.name }} - 機車租借管理系統{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Store Info -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    {% if store.image_path %}
+                    <img src="{{ url_for('admin_stores.uploaded_file', filename=store.image_path) }}" 
+                         alt="{{ store.name }}" 
+                         class="img-fluid rounded"
+                         style="max-width: 150px;">
+                    {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center rounded" 
+                         style="width: 150px; height: 150px;">
+                        <i class="bi bi-shop text-muted" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <h1 class="mb-3">
+                        <i class="bi bi-shop me-2"></i>{{ store.name }}
+                    </h1>
+                    {% if store.address %}
+                    <p class="mb-2">
+                        <i class="bi bi-geo-alt me-2 text-muted"></i>
+                        <strong>地址：</strong>{{ store.address }}
+                    </p>
+                    {% endif %}
+                    {% if store.phone %}
+                    <p class="mb-0">
+                        <i class="bi bi-telephone me-2 text-muted"></i>
+                        <strong>電話：</strong>{{ store.phone }}
+                    </p>
+                    {% endif %}
+                </div>
+                <div class="col-md-2 text-md-end">
+                    <a href="{{ url_for('frontend.index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>返回首頁
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Motorcycles List -->
+    <div class="mb-4">
+        <h2 class="mb-3">可租借機車</h2>
+        {% if motorcycles %}
+        <div class="row g-4">
+            {% for motorcycle in motorcycles %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    {% if motorcycle.image_path %}
+                    <img src="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}" 
+                         class="card-img-top" 
+                         alt="{{ motorcycle.model }}"
+                         style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                         style="height: 200px;">
+                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ motorcycle.model }}</h5>
+                        <p class="card-text">
+                            <span class="badge bg-secondary mb-2">{{ motorcycle.vehicle_type }}</span>
+                            {% if motorcycle.color %}
+                            <span class="badge bg-info mb-2">{{ motorcycle.color }}</span>
+                            {% endif %}
+                            <span class="badge {% if motorcycle.status == '待出租' %}bg-success{% elif motorcycle.status == '出租中' %}bg-warning{% else %}bg-danger{% endif %} mb-2">
+                                {{ motorcycle.status }}
+                            </span>
+                        </p>
+                        <p class="card-text text-muted small">
+                            <i class="bi bi-123 me-1"></i>車牌：{{ motorcycle.license_plate }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>此商店目前尚無機車資訊
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

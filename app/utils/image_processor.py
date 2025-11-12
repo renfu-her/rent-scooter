@@ -1,5 +1,5 @@
 import os
-from werkzeug.utils import secure_filename
+import time
 from PIL import Image
 from flask import current_app
 
@@ -55,9 +55,46 @@ def convert_to_webp(image_path, output_path=None, quality=85):
         raise Exception(f"Error converting image to WebP: {str(e)}")
 
 
+def generate_uuid7():
+    """
+    Generate a UUID7-like identifier (time-ordered UUID)
+    Format: timestamp (48 bits) + random (74 bits) = 122 bits total
+    Returns a hex string representation
+    """
+    # Get current timestamp in milliseconds
+    timestamp_ms = int(time.time() * 1000)
+    
+    # Generate random bytes (74 bits = ~9.25 bytes, we'll use 10 bytes)
+    random_bytes = os.urandom(10)
+    
+    # Combine timestamp (6 bytes) + random (10 bytes) = 16 bytes total
+    timestamp_bytes = timestamp_ms.to_bytes(6, byteorder='big')
+    uuid_bytes = timestamp_bytes + random_bytes
+    
+    # Convert to hex string (32 hex characters)
+    return uuid_bytes.hex()
+
+
+def delete_image(image_path):
+    """
+    Delete an image file
+    
+    Args:
+        image_path: Relative path to the image file (from uploads folder)
+    """
+    if image_path:
+        upload_folder = current_app.config['UPLOAD_FOLDER']
+        full_path = os.path.join(upload_folder, image_path)
+        if os.path.exists(full_path):
+            try:
+                os.remove(full_path)
+            except Exception as e:
+                current_app.logger.warning(f"Failed to delete image {full_path}: {str(e)}")
+
+
 def save_uploaded_image(file, subfolder=''):
     """
-    Save uploaded image and convert to WebP
+    Save uploaded image and convert to WebP using UUID7 as filename
     
     Args:
         file: Flask file object
@@ -67,28 +104,22 @@ def save_uploaded_image(file, subfolder=''):
         Path to the saved WebP file (relative to uploads folder)
     """
     if file and allowed_file(file.filename):
-        # Secure the filename
-        filename = secure_filename(file.filename)
-        
         # Create subfolder if specified
         upload_folder = current_app.config['UPLOAD_FOLDER']
         if subfolder:
             upload_folder = os.path.join(upload_folder, subfolder)
             os.makedirs(upload_folder, exist_ok=True)
         
-        # Generate unique filename to avoid conflicts
-        from datetime import datetime
-        import uuid
-        base_name = os.path.splitext(filename)[0]
-        extension = os.path.splitext(filename)[1]
-        unique_filename = f"{base_name}_{uuid.uuid4().hex[:8]}{extension}"
+        # Generate UUID7-like filename (always save as .webp after conversion)
+        unique_filename = f"{generate_uuid7()}.webp"
         file_path = os.path.join(upload_folder, unique_filename)
         
-        # Save the file
-        file.save(file_path)
+        # Save the uploaded file temporarily
+        temp_path = os.path.join(upload_folder, f"temp_{generate_uuid7()}")
+        file.save(temp_path)
         
         # Convert to WebP
-        webp_path = convert_to_webp(file_path)
+        webp_path = convert_to_webp(temp_path, output_path=file_path)
         
         # Return relative path from uploads folder
         relative_path = os.path.relpath(webp_path, current_app.config['UPLOAD_FOLDER'])
