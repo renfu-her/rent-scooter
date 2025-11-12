@@ -61,9 +61,86 @@
         nav a:hover {
             background: rgba(255,255,255,0.1);
         }
+        
+        /* Mobile menu toggle button */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+        
+        /* Mobile menu styles */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            header {
+                position: relative;
+            }
+            
+            /* Hide desktop nav on mobile */
+            nav {
+                display: block;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #2c3e50;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease-out;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                z-index: 1000;
+                width: 100%;
+            }
+            
+            nav.mobile-menu-open {
+                max-height: 500px;
+                overflow: visible;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0;
+                padding: 10px 0;
+                margin: 0;
+                align-items: center;
+            }
+            
+            nav ul li {
+                width: 100%;
+                margin: 0;
+                text-align: center;
+            }
+            
+            nav a {
+                display: block;
+                padding: 12px 20px;
+                border-radius: 0;
+                width: 100%;
+                text-align: center;
+            }
+            
+            nav a:hover {
+                background: rgba(255,255,255,0.15);
+            }
+            
+            .header-container {
+                position: relative;
+            }
+        }
         main {
             /* max-width: 1200px;
             margin: 20px auto; */
+            padding: 0;
+        }
+        
+        main > .container {
             padding: 0 20px;
         }
         footer {
@@ -105,8 +182,11 @@
     {% block body_content %}
     <header>
         <div class="header-container">
-            <div class="logo">RENT 機車租借</div>
-            <nav>
+            <div class="logo">機車租賃</div>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="選單">
+                <i class="bi bi-list"></i>
+            </button>
+            <nav id="mainNav">
                 <ul>
                     <li><a href="{{ url_for('frontend.index') }}">首頁</a></li>
                     {% if current_user.is_authenticated %}
@@ -142,6 +222,42 @@
     
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    
+    <script>
+        // Mobile menu toggle
+        $(document).ready(function() {
+            $('#mobileMenuToggle').on('click', function(e) {
+                e.stopPropagation();
+                $('#mainNav').toggleClass('mobile-menu-open');
+                // Toggle icon between list and X
+                var icon = $(this).find('i');
+                if ($('#mainNav').hasClass('mobile-menu-open')) {
+                    icon.removeClass('bi-list').addClass('bi-x-lg');
+                } else {
+                    icon.removeClass('bi-x-lg').addClass('bi-list');
+                }
+            });
+            
+            // Close menu when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('#mobileMenuToggle, #mainNav').length) {
+                    $('#mainNav').removeClass('mobile-menu-open');
+                    $('#mobileMenuToggle i').removeClass('bi-x-lg').addClass('bi-list');
+                }
+            });
+            
+            // Close menu when clicking on a link
+            $('#mainNav a').on('click', function() {
+                $('#mainNav').removeClass('mobile-menu-open');
+                $('#mobileMenuToggle i').removeClass('bi-x-lg').addClass('bi-list');
+            });
+            
+            // Prevent menu from closing when clicking inside it
+            $('#mainNav').on('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>

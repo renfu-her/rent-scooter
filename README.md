@@ -48,11 +48,27 @@ uv sync
 
 ### 3. 設定環境變數
 
-編輯 `.env` 檔案（如果需要的話）：
+複製 `.env.example` 為 `.env` 並編輯：
+
+**Windows:**
+```powershell
+copy .env.example .env
+notepad .env
 ```
+
+**macOS/Linux:**
+```bash
+cp .env.example .env
+nano .env
+```
+
+編輯 `.env` 檔案，設定您的資料庫連線：
+```env
+DATABASE_URL=mysql+pymysql://root:your_password@localhost/rent-scooter
 SECRET_KEY=your-secret-key-here
-DATABASE_URL=mysql+pymysql://root@localhost/rent-scooter
 ```
+
+**注意：** 如果沒有 `.env` 檔案，系統會使用預設值（無密碼的 root 使用者）。
 
 ### 4. 初始化資料庫
 

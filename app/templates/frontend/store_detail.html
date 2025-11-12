@@ -2,58 +2,175 @@
 
 {% block title %}{{ store.name }} - 機車租借管理系統{% endblock %}
 
+{% block extra_css %}
+<style>
+    .store-hero-wrapper {
+        width: 100%;
+        margin-left: calc(-50vw + 50%);
+        margin-right: calc(-50vw + 50%);
+        margin-bottom: 2rem;
+    }
+    
+    .store-hero {
+        height: 350px;
+        overflow: hidden;
+        position: relative;
+        width: 100vw;
+        max-width: 100%;
+    }
+    
+    .store-hero img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .store-hero-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1.5rem 1rem;
+        background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0) 100%);
+    }
+    
+    .store-hero-content h1 {
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+        word-wrap: break-word;
+    }
+    
+    .store-hero-content p {
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        word-wrap: break-word;
+        line-height: 1.5;
+    }
+    
+    .store-hero-content .bi {
+        min-width: 20px;
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+        .store-hero-wrapper {
+            margin-bottom: 1.5rem;
+        }
+        
+        .store-hero {
+            height: 250px !important;
+        }
+        
+        .store-hero-overlay {
+            padding: 1rem 0.75rem;
+        }
+        
+        .store-hero-content h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        
+        .store-hero-content p {
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+            line-height: 1.4;
+        }
+        
+        .store-hero-content .bi {
+            font-size: 0.9rem;
+            min-width: 18px;
+        }
+        
+        .store-hero-btn-wrapper {
+            margin-top: 1rem;
+            text-align: center !important;
+        }
+        
+        .store-hero-btn-wrapper .btn {
+            width: 100%;
+            max-width: 200px;
+        }
+    }
+    
+    /* Small mobile devices */
+    @media (max-width: 576px) {
+        .store-hero {
+            height: 250px !important;
+        }
+        
+        .store-hero-content h1 {
+            font-size: 1.25rem;
+        }
+        
+        .store-hero-content p {
+            font-size: 0.85rem;
+        }
+        
+        .store-hero-overlay {
+            padding: 0.75rem 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <!-- Store Info -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row align-items-center">
-                <div class="col-md-2">
-                    {% if store.image_path %}
-                    <img src="{{ url_for('admin_stores.uploaded_file', filename=store.image_path) }}" 
-                         alt="{{ store.name }}" 
-                         class="img-fluid rounded"
-                         style="max-width: 150px;">
-                    {% else %}
-                    <div class="bg-light d-flex align-items-center justify-content-center rounded" 
-                         style="width: 150px; height: 150px;">
-                        <i class="bi bi-shop text-muted" style="font-size: 3rem;"></i>
+<!-- Store Hero Section - Full Width -->
+<div class="store-hero-wrapper">
+    <div class="store-hero position-relative">
+        {% if store.image_path %}
+        <img src="{{ url_for('admin_stores.uploaded_file', filename=store.image_path) }}" 
+             alt="{{ store.name }}">
+        {% else %}
+        <div class="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center">
+            <i class="bi bi-shop text-white" style="font-size: 6rem; opacity: 0.3;"></i>
+        </div>
+        {% endif %}
+        
+        <!-- Semi-transparent black overlay at bottom -->
+        <div class="store-hero-overlay">
+            <div class="container">
+                <div class="row align-items-end">
+                    <div class="col-lg-8 col-md-7 col-12 store-hero-content text-white">
+                        <h1 class="fw-bold">
+                            <i class="bi bi-shop me-2"></i>{{ store.name }}
+                        </h1>
+                        {% if store.address %}
+                        <p class="mb-2">
+                            <i class="bi bi-geo-alt me-2"></i>
+                            <span>{{ store.address }}</span>
+                        </p>
+                        {% endif %}
+                        {% if store.phone %}
+                        <p class="mb-0">
+                            <i class="bi bi-telephone me-2"></i>
+                            <span>{{ store.phone }}</span>
+                        </p>
+                        {% endif %}
                     </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-8">
-                    <h1 class="mb-3">
-                        <i class="bi bi-shop me-2"></i>{{ store.name }}
-                    </h1>
-                    {% if store.address %}
-                    <p class="mb-2">
-                        <i class="bi bi-geo-alt me-2 text-muted"></i>
-                        <strong>地址：</strong>{{ store.address }}
-                    </p>
-                    {% endif %}
-                    {% if store.phone %}
-                    <p class="mb-0">
-                        <i class="bi bi-telephone me-2 text-muted"></i>
-                        <strong>電話：</strong>{{ store.phone }}
-                    </p>
-                    {% endif %}
-                </div>
-                <div class="col-md-2 text-md-end">
-                    <a href="{{ url_for('frontend.index') }}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left me-1"></i>返回首頁
-                    </a>
+                    <div class="col-lg-4 col-md-5 col-12 store-hero-btn-wrapper text-md-end mt-3 mt-md-0">
+                        <a href="{{ url_for('frontend.index') }}" class="btn btn-light">
+                            <i class="bi bi-arrow-left me-1"></i>返回首頁
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+<div class="container my-4 my-md-5">
 
     <!-- Motorcycles List -->
     <div class="mb-4">
         <h2 class="mb-3">可租借機車</h2>
         {% if motorcycles %}
-        <div class="row g-4">
+        <div class="row g-3 g-md-4">
             {% for motorcycle in motorcycles %}
-            <div class="col-md-6 col-lg-4">
+            <div class="col-12 col-sm-6 col-md-6 col-lg-4">
                 <div class="card h-100 shadow-sm">
                     {% if motorcycle.image_path %}
                     <img src="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}" 

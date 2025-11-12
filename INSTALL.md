@@ -174,26 +174,53 @@ mkdir -p uploads/{motorcycles,banners,stores}
 
 ### 環境變數配置
 
-在專案根目錄建立 `.env` 檔案（可選）：
+專案已包含 `.env.example` 範本檔案。建立您的 `.env` 檔案：
+
+**Windows:**
+```powershell
+# 複製範本檔案
+copy .env.example .env
+
+# 然後編輯 .env 檔案，填入您的資料庫資訊
+notepad .env
+```
+
+**macOS/Linux:**
+```bash
+# 複製範本檔案
+cp .env.example .env
+
+# 然後編輯 .env 檔案，填入您的資料庫資訊
+nano .env
+# 或
+vim .env
+```
+
+**`.env` 檔案內容範例：**
 
 ```env
-# 資料庫連線
+# 資料庫連線設定
+# 格式: mysql+pymysql://使用者名稱:密碼@主機:埠號/資料庫名稱
+# 範例: mysql+pymysql://root:password@localhost:3306/rent-scooter
 DATABASE_URL=mysql+pymysql://root:your_password@localhost/rent-scooter
 
 # 如果使用專用使用者：
 # DATABASE_URL=mysql+pymysql://rentscooter:your_password@localhost/rent-scooter
 
 # Flask Secret Key（生產環境必須更改）
+# 可以使用以下命令生成: python -c "import secrets; print(secrets.token_hex(32))"
 SECRET_KEY=your-super-secret-key-change-in-production
 
-# 上傳檔案大小限制（MB）
-MAX_UPLOAD_SIZE=16
+# 上傳檔案大小限制（MB，可選）
+# MAX_UPLOAD_SIZE=16
 ```
 
 **重要提示：**
+- `.env` 檔案已加入 `.gitignore`，不會被提交到版本控制
 - 如果沒有 `.env` 檔案，系統會使用預設值
-- 預設資料庫連線：`mysql+pymysql://root@localhost/rent-scooter`
+- 預設資料庫連線：`mysql+pymysql://root@localhost/rent-scooter`（無密碼）
 - 預設 Secret Key 僅用於開發環境，生產環境必須更改
+- 如果 MySQL 有設定密碼，請在 `DATABASE_URL` 中包含密碼
 
 ### 修改資料庫連線
 
