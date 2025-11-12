@@ -32,7 +32,7 @@
             <nav id="mainNav">
                 <ul>
                     <li><a href="{{ url_for('frontend.index') }}">首頁</a></li>
-                    {% if current_user.is_authenticated %}
+                    {% if current_user.is_authenticated and session.get('login_type') == 'frontend' %}
                         {% if current_user.user_type == 'customer' %}
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -51,9 +51,6 @@
                                     </a></li>
                                 </ul>
                             </li>
-                        {% else %}
-                            <li><a href="{{ url_for('backend.index') }}">後台管理</a></li>
-                            <li><a href="{{ url_for('auth.logout') }}">登出</a></li>
                         {% endif %}
                     {% else %}
                         <li><a href="{{ url_for('auth.frontend_login') }}">登入</a></li>

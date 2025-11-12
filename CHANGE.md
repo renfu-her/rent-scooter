@@ -2,7 +2,81 @@
 
 本文檔記錄專案的所有重要修改和功能更新。
 
-**最後更新時間：2025-11-12 16:43:38**
+**最後更新時間：2025-11-12 16:54:32**
+
+---
+
+## 2025-11-12 16:54 - 修正前臺模板不應使用後臺 Session
+
+### 修改內容
+- **前臺導航欄更新**：只在前臺 session (`login_type == 'frontend'`) 時才顯示用戶資訊
+- **預訂表單更新**：只在前臺 session 時才自動填入用戶資訊
+- **Session 檢查**：前臺模板現在會檢查 `session.get('login_type') == 'frontend'` 而不僅僅是 `current_user.is_authenticated`
+
+### 修改檔案
+- `app/templates/app.html`：
+  - 更新導航欄條件，檢查 `session.get('login_type') == 'frontend'`
+  - 移除後臺用戶在前臺顯示「後台管理」的邏輯（後臺用戶應該使用後臺頁面）
+- `app/templates/frontend/store_detail.html`：
+  - 更新預訂表單自動填入邏輯，只在前臺 session 時才填入用戶資訊
+
+### 說明
+- 現在如果用戶在後臺登入，訪問前臺時不會顯示用戶資訊，只會顯示「登入」按鈕
+- 前臺和後臺的 session 完全分離，互不影響
+- 用戶需要分別在前臺和後臺登入才能使用對應的功能
+
+---
+
+## 2025-11-12 16:50 - 實現前臺和後臺分離的 Session 管理
+
+### 修改內容
+- **Session 分離**：前臺登入和後臺登入使用不同的 session，互不影響
+- **Session 標記**：在登入時設置 `session['login_type']` 來區分前臺（'frontend'）和後臺（'backend'）登入
+- **新增裝飾器**：
+  - `frontend_login_required`：檢查是否為前臺登入 session
+  - `backend_login_required`：檢查是否為後臺登入 session
+- **訪問控制**：
+  - 前臺用戶嘗試訪問後臺時，會被要求使用後臺登入
+  - 後臺用戶嘗試訪問前臺受保護頁面時，會被要求使用前臺登入
+- **登出時清理**：登出時清除 `login_type` session 標記
+
+### 修改檔案
+- `app/controllers/auth_controller.py`：
+  - `login` 和 `login_by_username` 方法添加 `login_type` 參數
+  - 登入時設置 `session['login_type']`
+  - 登出時清除 `session['login_type']`
+- `app/utils/decorators.py`：
+  - 新增 `frontend_login_required` 裝飾器
+  - 新增 `backend_login_required` 裝飾器
+  - 更新 `admin_required` 和 `store_admin_required` 使用 `backend_login_required`
+- `app/views/auth.py`：
+  - 後臺登入時設置 `login_type='backend'`
+  - 前臺登入時設置 `login_type='frontend'`
+  - 註冊時自動設置 `login_type='frontend'`
+- `app/views/frontend.py`：
+  - 更新 `profile` 和 `orders` 路由使用 `frontend_login_required`
+- `app/views/backend.py`：
+  - 更新 `index` 路由使用 `backend_login_required`
+
+### 說明
+- 前臺用戶和後臺用戶現在使用完全獨立的 session
+- 如果前臺用戶嘗試訪問後臺，會被要求使用後臺登入頁面重新登入
+- 如果後臺用戶嘗試訪問前臺受保護頁面，會被要求使用前臺登入頁面重新登入
+- 這樣可以確保前臺和後臺的登入狀態互不干擾，提高安全性
+
+---
+
+## 2025-11-12 16:48 - 修正前端用戶登出重定向
+
+### 修改內容
+- **登出邏輯優化**：前端用戶（customer）登出後，重定向到前端登入頁面（`/frontend/login`），而不是首頁
+
+### 修改檔案
+- `app/views/auth.py`：更新 `logout` 路由，customer 用戶登出後重定向到 `auth.frontend_login`
+
+### 說明
+- 提供更好的用戶體驗，登出後可以直接重新登入
+- 後台用戶（admin/store_admin）登出後仍重定向到後台登入頁面
 
 ---
 

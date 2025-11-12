@@ -290,9 +290,9 @@
                         licenseWarningHtml = '<div class="alert alert-warning mt-2"><i class="bi bi-exclamation-triangle me-1"></i>此車款類型需要駕照</div>';
                     }
                     
-                    // Get user info from template (if logged in)
-                    var userUsername = {% if current_user.is_authenticated and current_user.user_type == 'customer' %}'{{ current_user.username }}'{% else %}null{% endif %};
-                    var userIdNumber = {% if current_user.is_authenticated and current_user.user_type == 'customer' and current_user.id_number %}'{{ current_user.id_number }}'{% else %}null{% endif %};
+                    // Get user info from template (if logged in with frontend session)
+                    var userUsername = {% if current_user.is_authenticated and session.get('login_type') == 'frontend' and current_user.user_type == 'customer' %}'{{ current_user.username }}'{% else %}null{% endif %};
+                    var userIdNumber = {% if current_user.is_authenticated and session.get('login_type') == 'frontend' and current_user.user_type == 'customer' and current_user.id_number %}'{{ current_user.id_number }}'{% else %}null{% endif %};
                     
                     var content = `
                         <div class="text-center mb-3">

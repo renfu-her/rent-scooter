@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, session
 from flask_login import login_user, logout_user, current_user
 from app.controllers.auth_controller import AuthController
 from app.utils.decorators import login_required
@@ -10,8 +10,14 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Login page (backend)"""
-    if current_user.is_authenticated:
+    # Check if user is already authenticated with backend session
+    if current_user.is_authenticated and session.get('login_type') == 'backend':
         return redirect(url_for('backend.index'))
+    
+    # If user is authenticated but with frontend session, logout first
+    if current_user.is_authenticated and session.get('login_type') == 'frontend':
+        logout_user()
+        session.pop('login_type', None)
     
     if request.method == 'POST':
         username = request.form.get('username')
@@ -21,7 +27,7 @@ def login():
             flash('請輸入使用者名稱和密碼', 'error')
             return render_template('auth/login.html')
         
-        user = AuthController.login_by_username(username, password)
+        user = AuthController.login_by_username(username, password, login_type='backend')
         if user:
             flash(f'歡迎回來，{user.username}！', 'success')
             next_page = request.args.get('next')
@@ -43,8 +49,14 @@ def login():
 @auth_bp.route('/frontend/login', methods=['GET', 'POST'])
 def frontend_login():
     """Frontend login/register page"""
-    if current_user.is_authenticated and current_user.user_type == 'customer':
+    # Check if user is already authenticated with frontend session
+    if current_user.is_authenticated and session.get('login_type') == 'frontend' and current_user.user_type == 'customer':
         return redirect(url_for('frontend.index'))
+    
+    # If user is authenticated but with backend session, logout first
+    if current_user.is_authenticated and session.get('login_type') == 'backend':
+        logout_user()
+        session.pop('login_type', None)
     
     return render_template('frontend/login.html')
 
@@ -60,7 +72,7 @@ def api_frontend_login():
         if not email or not password:
             return jsonify({'error': '請輸入電子郵件和密碼'}), 400
         
-        user = AuthController.login(email, password)
+        user = AuthController.login(email, password, login_type='frontend')
         if user:
             if user.user_type != 'customer':
                 return jsonify({'error': '此帳號無法使用前端登入'}), 403
@@ -115,7 +127,9 @@ def api_frontend_register():
         )
         
         # Auto login after registration
+        from flask import session
         login_user(user)
+        session['login_type'] = 'frontend'  # Set session type for frontend
         
         return jsonify({
             'success': True,
@@ -141,8 +155,8 @@ def logout():
     logout_user()
     flash('您已成功登出', 'info')
     
-    # Redirect based on where user came from
+    # Redirect based on user type
     if user_type == 'customer':
-        return redirect(url_for('frontend.index'))
+        return redirect(url_for('auth.frontend_login'))
     else:
         return redirect(url_for('auth.login'))

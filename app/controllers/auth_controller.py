@@ -1,3 +1,4 @@
+from flask import session
 from flask_login import login_user, logout_user
 from app.models import db
 from app.models.user import User
@@ -5,26 +6,44 @@ from app.models.user import User
 
 class AuthController:
     @staticmethod
-    def login(email, password):
-        """Authenticate user by email"""
+    def login(email, password, login_type='frontend'):
+        """Authenticate user by email
+        
+        Args:
+            email: User email
+            password: User password
+            login_type: 'frontend' or 'backend'
+        """
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password) and user.is_active:
             login_user(user)
+            # Set session type to distinguish frontend and backend sessions
+            session['login_type'] = login_type
             return user
         return None
     
     @staticmethod
-    def login_by_username(username, password):
-        """Authenticate user by username (for backward compatibility)"""
+    def login_by_username(username, password, login_type='backend'):
+        """Authenticate user by username (for backward compatibility)
+        
+        Args:
+            username: User username
+            password: User password
+            login_type: 'frontend' or 'backend'
+        """
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password) and user.is_active:
             login_user(user)
+            # Set session type to distinguish frontend and backend sessions
+            session['login_type'] = login_type
             return user
         return None
     
     @staticmethod
     def logout():
         """Logout user"""
+        # Clear session type
+        session.pop('login_type', None)
         logout_user()
     
     @staticmethod

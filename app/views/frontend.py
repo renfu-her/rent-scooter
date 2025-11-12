@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, jsonify, flash
-from flask_login import login_required, current_user
+from flask_login import current_user
+from app.utils.decorators import frontend_login_required
 from app.controllers.store_controller import StoreController
 from app.controllers.motorcycle_controller import MotorcycleController
 from app.controllers.order_controller import OrderController
@@ -106,7 +107,7 @@ def reserve_motorcycle(motorcycle_id):
 
 
 @frontend_bp.route('/profile', methods=['GET', 'POST'])
-@login_required
+@frontend_login_required
 def profile():
     """User profile page"""
     if current_user.user_type != 'customer':
@@ -157,7 +158,7 @@ def profile():
 
 
 @frontend_bp.route('/orders')
-@login_required
+@frontend_login_required
 def orders():
     """User orders page"""
     if current_user.user_type != 'customer':

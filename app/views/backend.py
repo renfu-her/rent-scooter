@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, url_for, render_template
-from flask_login import login_required
+from app.utils.decorators import backend_login_required
 from app.controllers.motorcycle_controller import MotorcycleController
 from app.controllers.order_controller import OrderController
 from app.controllers.partner_controller import PartnerController
@@ -11,7 +11,7 @@ backend_bp = Blueprint('backend', __name__)
 
 
 @backend_bp.route('/')
-@login_required
+@backend_login_required
 def index():
     """Backend dashboard"""
     # Get statistics
