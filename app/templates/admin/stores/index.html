@@ -59,8 +59,12 @@
                                 {% if store.image_path %}
                                     <img src="{{ url_for('admin_stores.uploaded_file', filename=store.image_path) }}" 
                                          alt="{{ store.name }}" 
-                                         class="img-thumbnail" 
-                                         style="width: 60px; height: 60px; object-fit: cover;">
+                                         class="img-thumbnail store-image" 
+                                         data-image-url="{{ url_for('admin_stores.uploaded_file', filename=store.image_path) }}"
+                                         data-store-name="{{ store.name }}"
+                                         style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                                         data-bs-toggle="modal" 
+                                         data-bs-target="#imageModal">
                                 {% else %}
                                     <span class="text-muted">-</span>
                                 {% endif %}
@@ -91,4 +95,37 @@
         </div>
     </div>
 </div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">商店圖片</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-0">
+                <img id="modalImage" src="" alt="" class="img-fluid" style="max-height: 80vh; width: auto;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_extra_js %}
+<script>
+    $(document).ready(function() {
+        // Handle store image click to show in modal
+        $('.store-image').on('click', function() {
+            var imageUrl = $(this).data('image-url');
+            var storeName = $(this).data('store-name');
+            $('#modalImage').attr('src', imageUrl);
+            $('#modalImage').attr('alt', storeName);
+            $('#imageModalLabel').text(storeName || '商店圖片');
+        });
+    });
+</script>
 {% endblock %}

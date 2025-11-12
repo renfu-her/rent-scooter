@@ -174,9 +174,13 @@
                 <div class="card h-100 shadow-sm">
                     {% if motorcycle.image_path %}
                     <img src="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}" 
-                         class="card-img-top" 
+                         class="card-img-top motorcycle-image" 
                          alt="{{ motorcycle.model }}"
-                         style="height: 200px; object-fit: cover;">
+                         data-image-url="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}"
+                         data-motorcycle-model="{{ motorcycle.model }}"
+                         style="height: 200px; object-fit: cover; cursor: pointer;"
+                         data-bs-toggle="modal" 
+                         data-bs-target="#imageModal">
                     {% else %}
                     <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
                          style="height: 200px;">
@@ -209,5 +213,38 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">機車圖片</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-0">
+                <img id="modalImage" src="" alt="" class="img-fluid" style="max-height: 80vh; width: auto;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Handle image click to show in modal
+        $('.motorcycle-image').on('click', function() {
+            var imageUrl = $(this).data('image-url');
+            var model = $(this).data('motorcycle-model');
+            $('#modalImage').attr('src', imageUrl);
+            $('#modalImage').attr('alt', model);
+            $('#imageModalLabel').text(model || '機車圖片');
+        });
+    });
+</script>
 {% endblock %}
 
