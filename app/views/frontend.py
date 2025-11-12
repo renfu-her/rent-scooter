@@ -57,12 +57,13 @@ def reserve_motorcycle(motorcycle_id):
         data = request.get_json()
         
         # Validate required fields
-        renter_name = data.get('renter_name', '').strip()
-        renter_id_number = data.get('renter_id_number', '').strip()
+        # Handle None values from JSON (when field is explicitly null)
+        renter_name = (data.get('renter_name') or '').strip()
+        renter_id_number = (data.get('renter_id_number') or '').strip()
         has_license = data.get('has_license', False)
-        reservation_status = data.get('status', '預訂')
-        contact_phone = data.get('contact_phone', '').strip() or None
-        remarks = data.get('remarks', '').strip() or None
+        reservation_status = data.get('status') or '預訂'
+        contact_phone = (data.get('contact_phone') or '').strip() or None
+        remarks = (data.get('remarks') or '').strip() or None
         
         if not renter_name:
             return jsonify({'error': '請輸入承租人姓名'}), 400

@@ -114,9 +114,11 @@ class MotorcycleController:
     
     @staticmethod
     def reserve(motorcycle_id, renter_name, renter_id_number, has_license, reservation_status='預訂', contact_phone=None, remarks=None):
-        """Reserve a motorcycle with customer information"""
+        """Reserve a motorcycle with customer information and create an order"""
         from app.utils.timezone_utils import get_today_end
         from app.models.reservation import Reservation
+        from app.controllers.order_controller import OrderController
+        from datetime import datetime
         
         motorcycle = Motorcycle.query.get_or_404(motorcycle_id)
         
@@ -150,6 +152,29 @@ class MotorcycleController:
         # Update motorcycle status
         motorcycle.status = reservation_status
         motorcycle.reservation_expires_at = get_today_end()
+        
+        # Create order record directly (without using OrderController.create to avoid status conflict)
+        from app.models.order import Order, OrderMotorcycle
+        order = Order(
+            order_number=OrderController.generate_order_number(),
+            renter_name=renter_name,
+            renter_id_number=renter_id_number,
+            has_license=has_license,
+            total_amount=0,  # 預訂時金額為0，後續可在後台更新
+            status='待處理',  # 預訂狀態為待處理
+            reservation_date=datetime.now().date(),
+            contact_phone=contact_phone,
+            remarks=remarks
+        )
+        db.session.add(order)
+        db.session.flush()  # Get order ID
+        
+        # Add motorcycle to order (without changing motorcycle status)
+        order_motorcycle = OrderMotorcycle(
+            order_id=order.id,
+            motorcycle_id=motorcycle_id
+        )
+        db.session.add(order_motorcycle)
         
         db.session.commit()
         

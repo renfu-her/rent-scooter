@@ -20,13 +20,11 @@
                 <div class="card h-100 shadow-sm">
                     {% if store.image_path %}
                     <img src="{{ url_for('admin_stores.uploaded_file', filename=store.image_path) }}" 
-                         class="card-img-top" 
-                         alt="{{ store.name }}"
-                         style="height: 200px; object-fit: cover;">
+                         class="card-img-top store-card-image" 
+                         alt="{{ store.name }}">
                     {% else %}
-                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
-                         style="height: 200px;">
-                        <i class="bi bi-shop text-muted" style="font-size: 3rem;"></i>
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center store-card-placeholder">
+                        <i class="bi bi-shop text-muted store-card-placeholder-icon"></i>
                     </div>
                     {% endif %}
                     <div class="card-body">

@@ -2,7 +2,96 @@
 
 本文檔記錄專案的所有重要修改和功能更新。
 
-**最後更新時間：2025-11-12 15:27:26**
+**最後更新時間：2025-11-12 15:54:27**
+
+---
+
+## 2025-11-12 15:54 - 商店管理添加合作商關聯
+
+### 修改內容
+- **資料庫模型更新**：在 `Store` 模型中添加 `partner_id` 欄位
+  - 添加外鍵關聯到 `partners` 表
+  - 建立 `partner` 關聯關係（一對多：一個合作商可以有多個商店）
+- **商店管理功能增強**：
+  - 商店列表頁面新增「合作商」欄位，顯示商店所屬的合作商（以藍色徽章顯示）
+  - 商店創建表單添加合作商選擇下拉選單（選填）
+  - 商店編輯表單添加合作商選擇下拉選單，並預設選中當前合作商
+- **控制器更新**：`StoreController` 的 `create` 和 `update` 方法支持 `partner_id` 參數
+- **資料庫遷移**：創建遷移文件添加 `partner_id` 欄位和外鍵約束
+
+### 修改檔案
+- `app/models/store.py`
+- `app/controllers/store_controller.py`
+- `app/views/admin/stores.py`
+- `app/templates/admin/stores/index.html`
+- `app/templates/admin/stores/create.html`
+- `app/templates/admin/stores/edit.html`
+- `migrations/versions/8e8f12ad5f5e_add_partner_id_to_stores.py`
+
+### 業務邏輯
+- 商店可以選擇性地關聯到一個合作商
+- 如果商店沒有關聯合作商，列表頁面顯示 "-"
+- 合作商欄位為選填，不影響現有商店資料
+
+---
+
+## 2025-11-12 15:52 - 預訂完成時自動創建訂單記錄
+
+### 修改內容
+- **預訂流程增強**：當前端完成預訂時，系統會同時創建 Reservation 和 Order 記錄
+  - 創建 `Reservation` 記錄：用於追蹤預訂狀態、到期時間等預訂相關資訊
+  - 創建 `Order` 記錄：用於後台訂單管理，狀態為 '待處理'，金額為 0（後續可在後台更新）
+  - Order 記錄包含承租人資訊（姓名、身份證號碼、是否有駕照）、聯絡電話、備註等
+  - Order 記錄與預訂的機車建立關聯（透過 `OrderMotorcycle`）
+- **狀態管理**：預訂時機車狀態設為 '預訂'，不會被改為 '出租中'（避免與 OrderController 的邏輯衝突）
+
+### 修改檔案
+- `app/controllers/motorcycle_controller.py`
+
+### 業務邏輯
+- 預訂完成後，後台可以在「訂單管理」中看到該訂單
+- 訂單狀態為 '待處理'，管理員可以在後台更新訂單狀態、金額等資訊
+- 當訂單狀態改為 '進行中' 或 '已完成' 時，機車狀態會自動更新（由 OrderController 處理）
+
+---
+
+## 2025-11-12 15:41 - 修正預訂表單 NoneType 錯誤
+
+### 修改內容
+- **錯誤修正**：修正預訂表單提交時的 `'NoneType' object has no attribute 'strip'` 錯誤
+  - 當 JSON 數據中字段值為 `null` 時，`data.get()` 會返回 `None`
+  - 使用 `or` 運算符確保在調用 `.strip()` 前將 `None` 轉換為空字串
+  - 修正所有相關字段的處理邏輯（`renter_name`, `renter_id_number`, `contact_phone`, `remarks`）
+
+### 修改檔案
+- `app/views/frontend.py`
+
+### 問題原因
+當前端發送 JSON 數據時，如果某個字段的值是 `null`（例如 `contact_phone: null`），Python 的 `data.get('key', '')` 會返回 `None` 而不是預設值 `''`，導致對 `None` 調用 `.strip()` 時出錯。
+
+### 解決方案
+使用 `(data.get('key') or '')` 來確保即使值為 `None`，也會轉換為空字串，然後再調用 `.strip()`。
+
+---
+
+## 2025-11-12 15:41 - 修正臺灣身份證號碼檢查碼驗證邏輯
+
+### 修改內容
+- **後端驗證邏輯修正**：修正 `id_validator.py` 中檢查碼計算的索引錯誤
+  - 正確計算字母代碼的十位數和個位數
+  - 正確處理 9 位數字的權重計算（id_number[1] 到 id_number[9]）
+  - 確保檢查碼驗證符合臺灣身份證標準算法
+- **前端驗證邏輯同步**：更新 JavaScript 驗證函數，與後端邏輯保持一致
+  - 修正檢查碼計算的索引映射
+  - 確保前端和後端驗證結果一致
+
+### 修改檔案
+- `app/utils/id_validator.py`
+- `app/templates/frontend/store_detail.html`
+
+### 測試結果
+- `A123456789`：驗證通過 ✓
+- 無效身份證號碼：正確拒絕並顯示錯誤訊息
 
 ---
 

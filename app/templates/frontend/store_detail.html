@@ -2,121 +2,6 @@
 
 {% block title %}{{ store.name }} - 機車租借管理系統{% endblock %}
 
-{% block extra_css %}
-<style>
-    .store-hero-wrapper {
-        width: 100%;
-        margin-left: calc(-50vw + 50%);
-        margin-right: calc(-50vw + 50%);
-        margin-bottom: 2rem;
-    }
-    
-    .store-hero {
-        height: 350px;
-        overflow: hidden;
-        position: relative;
-        width: 100vw;
-        max-width: 100%;
-    }
-    
-    .store-hero img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-    
-    .store-hero-overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 1.5rem 1rem;
-        background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0) 100%);
-    }
-    
-    .store-hero-content h1 {
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        font-size: 2rem;
-        margin-bottom: 0.75rem;
-        word-wrap: break-word;
-    }
-    
-    .store-hero-content p {
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-        word-wrap: break-word;
-        line-height: 1.5;
-    }
-    
-    .store-hero-content .bi {
-        min-width: 20px;
-    }
-    
-    /* Mobile optimizations */
-    @media (max-width: 768px) {
-        .store-hero-wrapper {
-            margin-bottom: 1.5rem;
-        }
-        
-        .store-hero {
-            height: 250px !important;
-        }
-        
-        .store-hero-overlay {
-            padding: 1rem 0.75rem;
-        }
-        
-        .store-hero-content h1 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            line-height: 1.3;
-        }
-        
-        .store-hero-content p {
-            font-size: 0.9rem;
-            margin-bottom: 0.4rem;
-            line-height: 1.4;
-        }
-        
-        .store-hero-content .bi {
-            font-size: 0.9rem;
-            min-width: 18px;
-        }
-        
-        .store-hero-btn-wrapper {
-            margin-top: 1rem;
-            text-align: center !important;
-        }
-        
-        .store-hero-btn-wrapper .btn {
-            width: 100%;
-            max-width: 200px;
-        }
-    }
-    
-    /* Small mobile devices */
-    @media (max-width: 576px) {
-        .store-hero {
-            height: 250px !important;
-        }
-        
-        .store-hero-content h1 {
-            font-size: 1.25rem;
-        }
-        
-        .store-hero-content p {
-            font-size: 0.85rem;
-        }
-        
-        .store-hero-overlay {
-            padding: 0.75rem 0.5rem;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <!-- Store Hero Section - Full Width -->
 <div class="store-hero-wrapper">
@@ -126,7 +11,7 @@
              alt="{{ store.name }}">
         {% else %}
         <div class="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center">
-            <i class="bi bi-shop text-white" style="font-size: 6rem; opacity: 0.3;"></i>
+            <i class="bi bi-shop text-white store-hero-placeholder-icon"></i>
         </div>
         {% endif %}
         
@@ -174,17 +59,15 @@
                 <div class="card h-100 shadow-sm">
                     {% if motorcycle.image_path %}
                     <img src="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}" 
-                         class="card-img-top motorcycle-image" 
+                         class="card-img-top motorcycle-image motorcycle-card-image" 
                          alt="{{ motorcycle.model }}"
                          data-image-url="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}"
                          data-motorcycle-model="{{ motorcycle.model }}"
-                         style="height: 200px; object-fit: cover; cursor: pointer;"
                          data-bs-toggle="modal" 
                          data-bs-target="#imageModal">
                     {% else %}
-                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
-                         style="height: 200px;">
-                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center motorcycle-card-placeholder">
+                        <i class="bi bi-image text-muted motorcycle-card-placeholder-icon"></i>
                     </div>
                     {% endif %}
                     <div class="card-body d-flex flex-column">
@@ -245,7 +128,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center p-0">
-                <img id="modalImage" src="" alt="" class="img-fluid" style="max-height: 80vh; width: auto;">
+                <img id="modalImage" src="" alt="" class="img-fluid image-modal-image">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
@@ -320,28 +203,30 @@
             return false;
         }
         
-        // Calculate checksum
+        // Calculate checksum using Taiwan ID verification algorithm
         // Letter mapping: A=10, B=11, C=12, ..., Z=33
         var letterCode = idNumber.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
         
         // Split letter code into tens and ones
+        // Example: A=10 -> tens=1, ones=0; B=11 -> tens=1, ones=1
         var letterTens = Math.floor(letterCode / 10);
         var letterOnes = letterCode % 10;
         
-        // Get digits
-        var digits = [];
-        for (var i = 1; i < idNumber.length; i++) {
-            digits.push(parseInt(idNumber[i]));
-        }
-        
-        // Calculate checksum
-        // Formula: (letter_tens*1 + letter_ones*9 + digit[0]*8 + digit[1]*7 + ... + digit[8]*1) % 10 == 0
+        // Taiwan ID checksum formula:
+        // (letter_tens×1 + letter_ones×9 + id_number[1]×8 + id_number[2]×7 + ... + id_number[8]×1 + id_number[9]×1) % 10 == 0
+        // Weights array: [1, 9, 8, 7, 6, 5, 4, 3, 2, 1]
         var weights = [1, 9, 8, 7, 6, 5, 4, 3, 2, 1];
         var checksum = letterTens * weights[0] + letterOnes * weights[1];
         
-        for (var i = 0; i < digits.length; i++) {
-            checksum += digits[i] * weights[i + 2];
+        // Add digits from id_number[1] to id_number[8] (8 digits)
+        for (var i = 1; i < 9; i++) {
+            var digit = parseInt(idNumber[i]);
+            checksum += digit * weights[i + 1];
         }
+        
+        // Add check digit (id_number[9]) with weight 1
+        var checkDigit = parseInt(idNumber[9]);
+        checksum += checkDigit * weights[9];
         
         if (checksum % 10 !== 0) {
             alert('身份證號碼檢查碼錯誤，請確認身份證號碼是否正確');
@@ -354,6 +239,7 @@
     
     $(document).ready(function() {
         var currentMotorcycleId = null;
+        var currentMotorcycleData = null; // Store motorcycle data for validation
         
         // Handle image click to show in modal
         $('.motorcycle-image').on('click', function() {
@@ -378,6 +264,7 @@
                 url: '/api/motorcycles/' + motorcycleId,
                 method: 'GET',
                 success: function(data) {
+                    currentMotorcycleData = data; // Store for later validation
                     var imageHtml = '';
                     if (data.image_path) {
                         // Construct image URL using the same format as the template
@@ -388,10 +275,10 @@
                             imagePath = 'motorcycles/' + imagePath;
                         }
                         var imageUrl = '/backend/motorcycles/uploads/' + imagePath;
-                        imageHtml = '<img src="' + imageUrl + '" class="img-fluid rounded mb-3" style="max-height: 300px; width: auto;" alt="' + data.model + '" onerror="this.style.display=\'none\'">';
+                        imageHtml = '<img src="' + imageUrl + '" class="img-fluid rounded mb-3 motorcycle-reservation-image" alt="' + data.model + '" onerror="this.style.display=\'none\'">';
                     } else {
                         // Show placeholder if no image
-                        imageHtml = '<div class="bg-light d-flex align-items-center justify-content-center rounded mb-3" style="height: 200px;"><i class="bi bi-image text-muted" style="font-size: 3rem;"></i></div>';
+                        imageHtml = '<div class="bg-light d-flex align-items-center justify-content-center rounded mb-3 motorcycle-reservation-placeholder"><i class="bi bi-image text-muted motorcycle-reservation-placeholder-icon"></i></div>';
                     }
                     
                     var colorHtml = data.color ? '<p><strong>顏色：</strong>' + data.color + '</p>' : '';
@@ -421,11 +308,10 @@
                         </div>
                         <div class="mb-3">
                             <label for="renterIdNumber" class="form-label"><strong>身份證號碼 <span class="text-danger">*</span></strong></label>
-                            <input type="text" class="form-control" id="renterIdNumber" 
+                            <input type="text" class="form-control id-number-input" id="renterIdNumber" 
                                    placeholder="請輸入身份證號碼（例：A123456789）" 
                                    required 
                                    maxlength="10"
-                                   style="text-transform: uppercase;"
                                    oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 10);">
                             <small class="form-text text-muted">格式：1個英文字母 + 1個數字(1或2) + 8個數字</small>
                         </div>
@@ -446,17 +332,12 @@
                             <input type="tel" class="form-control" id="contactPhone" placeholder="選填">
                         </div>
                         <div class="mb-3">
-                            <label for="reservationStatus" class="form-label"><strong>預訂狀態</strong></label>
-                            <select class="form-select" id="reservationStatus">
-                                <option value="預訂" selected>預訂</option>
-                                <option value="出租中">出租中</option>
-                                <option value="已出租">已出租</option>
-                            </select>
-                            <small class="form-text text-muted">預訂狀態將在當天 23:59:59 到期，如未更新為「已出租」將自動恢復為「待出租」</small>
-                        </div>
-                        <div class="mb-3">
                             <label for="remarks" class="form-label">備註</label>
                             <textarea class="form-control" id="remarks" rows="3" placeholder="選填"></textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-1"></i>
+                            <small><strong>預訂提醒：</strong>預訂時間到當天 23:59:59，如果狀態沒有換成「已出租」，將會自動恢復為「待出租」</small>
                         </div>
                     `;
                     $('#reservationContent').html(content);
@@ -492,7 +373,7 @@
             var renterName = $('#renterName').val().trim();
             var renterIdNumber = $('#renterIdNumber').val().trim();
             var hasLicense = $('input[name="hasLicense"]:checked').val() === 'true';
-            var status = $('#reservationStatus').val();
+            var status = '預訂'; // 固定為預訂狀態
             var contactPhone = $('#contactPhone').val().trim();
             var remarks = $('#remarks').val().trim();
             
@@ -561,6 +442,7 @@
         // Reset modal when closed
         $('#reservationModal').on('hidden.bs.modal', function() {
             currentMotorcycleId = null;
+            currentMotorcycleData = null; // Reset motorcycle data
             $('#reservationContent').html('<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">載入中...</span></div></div>');
             $('#confirmReservationBtn').prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>確認預訂');
         });
