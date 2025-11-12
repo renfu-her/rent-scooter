@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, send_from_directory, current_app
 from app.controllers.store_controller import StoreController
+from app.controllers.partner_controller import PartnerController
 from app.utils.decorators import admin_required
 from app.utils.image_processor import save_uploaded_image, allowed_file, delete_image
 
@@ -12,6 +13,10 @@ admin_stores_bp = Blueprint('admin_stores', __name__)
 def index():
     """List all stores"""
     stores = StoreController.get_all()
+    # Eager load partner relationship to avoid N+1 queries
+    for store in stores:
+        if store.partner_id:
+            store.partner  # Trigger lazy load
     return render_template('admin/stores/index.html', stores=stores)
 
 
@@ -19,6 +24,7 @@ def index():
 @admin_required
 def create():
     """Create new store"""
+    partners = PartnerController.get_all()
     if request.method == 'POST':
         try:
             image_path = None
@@ -27,17 +33,24 @@ def create():
                 if file and file.filename and allowed_file(file.filename):
                     image_path = save_uploaded_image(file, 'stores')
             
+            partner_id = request.form.get('partner_id')
+            if partner_id == '':
+                partner_id = None
+            else:
+                partner_id = int(partner_id) if partner_id else None
+            
             StoreController.create(
                 name=request.form.get('name'),
                 address=request.form.get('address'),
                 phone=request.form.get('phone'),
+                partner_id=partner_id,
                 image_path=image_path
             )
             flash('商店建立成功', 'success')
             return redirect(url_for('admin_stores.index'))
         except Exception as e:
             flash(f'建立失敗: {str(e)}', 'error')
-    return render_template('admin/stores/create.html')
+    return render_template('admin/stores/create.html', partners=partners)
 
 
 @admin_stores_bp.route('/<int:store_id>/edit', methods=['GET', 'POST'])
@@ -45,6 +58,7 @@ def create():
 def edit(store_id):
     """Edit store"""
     store = StoreController.get_by_id(store_id)
+    partners = PartnerController.get_all()
     if request.method == 'POST':
         try:
             image_path = store.image_path
@@ -58,18 +72,25 @@ def edit(store_id):
                     # Save new image
                     image_path = save_uploaded_image(file, 'stores')
             
+            partner_id = request.form.get('partner_id')
+            if partner_id == '':
+                partner_id = None
+            else:
+                partner_id = int(partner_id) if partner_id else None
+            
             StoreController.update(
                 store_id,
                 name=request.form.get('name'),
                 address=request.form.get('address'),
                 phone=request.form.get('phone'),
+                partner_id=partner_id,
                 image_path=image_path
             )
             flash('商店更新成功', 'success')
             return redirect(url_for('admin_stores.index'))
         except Exception as e:
             flash(f'更新失敗: {str(e)}', 'error')
-    return render_template('admin/stores/edit.html', store=store)
+    return render_template('admin/stores/edit.html', store=store, partners=partners)
 
 
 @admin_stores_bp.route('/<int:store_id>/delete', methods=['POST'])

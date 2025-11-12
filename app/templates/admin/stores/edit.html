@@ -29,6 +29,16 @@
             </div>
             
             <div class="mb-4">
+                <label for="partner_id" class="form-label">合作商</label>
+                <select class="form-select" id="partner_id" name="partner_id">
+                    <option value="">請選擇合作商（選填）</option>
+                    {% for partner in partners %}
+                    <option value="{{ partner.id }}" {% if store.partner_id == partner.id %}selected{% endif %}>{{ partner.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-4">
                 <label for="image" class="form-label">商店圖片 <small class="text-muted">(留空則不更新)</small></label>
                 <input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif">
                 <small class="form-text text-muted">建議尺寸:800×600 像素,最大 5MB</small>

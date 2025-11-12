@@ -28,18 +28,33 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint and 'stores' in request.endpoint %}active{% endif %}" href="{{ url_for('admin_stores.index') }}">
-                        <i class="bi bi-shop me-2"></i>商店管理
+                    <a class="nav-link {% if request.endpoint and ('stores' in request.endpoint or 'partners' in request.endpoint) %}active{% endif %}" 
+                       href="#" 
+                       data-bs-toggle="collapse" 
+                       data-bs-target="#storePartnerSubmenu" 
+                       aria-expanded="{% if request.endpoint and ('stores' in request.endpoint or 'partners' in request.endpoint) %}true{% else %}false{% endif %}"
+                       aria-controls="storePartnerSubmenu">
+                        <span>
+                            <i class="bi bi-shop me-2"></i>商店與合作商
+                        </span>
+                        <i class="bi bi-chevron-down"></i>
                     </a>
+                    <ul class="nav flex-column collapse {% if request.endpoint and ('stores' in request.endpoint or 'partners' in request.endpoint) %}show{% endif %}" id="storePartnerSubmenu">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint and 'stores' in request.endpoint %}active{% endif %}" href="{{ url_for('admin_stores.index') }}">
+                                <i class="bi bi-shop me-2"></i>商店管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint and 'partners' in request.endpoint %}active{% endif %}" href="{{ url_for('admin_partners.index') }}">
+                                <i class="bi bi-people me-2"></i>合作商管理
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {% if request.endpoint and 'motorcycles' in request.endpoint %}active{% endif %}" href="{{ url_for('admin_motorcycles.index') }}">
                         <i class="bi bi-bicycle me-2"></i>機車管理
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint and 'partners' in request.endpoint %}active{% endif %}" href="{{ url_for('admin_partners.index') }}">
-                        <i class="bi bi-people me-2"></i>合作商管理
                     </a>
                 </li>
                 <li class="nav-item">
@@ -232,6 +247,8 @@ $(document).ready(function() {
     $('.data-table').each(function() {
         if (!$.fn.DataTable.isDataTable(this)) {
             var $table = $(this);
+            // Ensure all columns are left-aligned
+            $table.find('th, td').addClass('text-start');
             var $tbody = $table.find('tbody');
             var headerCols = $table.find('thead th').length;
             
@@ -256,7 +273,8 @@ $(document).ready(function() {
                         responsive: true,
                         order: [],
                         columnDefs: [
-                            { orderable: false, targets: -1 } // 最後一列（操作列）不可排序
+                            { orderable: false, targets: -1 }, // 最後一列（操作列）不可排序
+                            { className: 'text-start', targets: '_all' } // 所有列左對齊
                         ]
                     });
                 } catch (e) {

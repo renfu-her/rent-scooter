@@ -98,7 +98,7 @@ class OrderController:
         
         # Handle motorcycle updates
         status_changes = []  # Track status changes to emit after commit
-        if 'motorcycle_ids' in kwargs:
+        if 'motorcycle_ids' in kwargs and kwargs['motorcycle_ids'] is not None:
             # Remove old associations
             OrderMotorcycle.query.filter_by(order_id=order.id).delete()
             # Add new associations

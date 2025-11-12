@@ -38,16 +38,17 @@
 <div class="card">
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-hover data-table">
+            <table class="table table-hover data-table text-start">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>圖片</th>
-                        <th>名稱</th>
-                        <th>地址</th>
-                        <th>電話</th>
-                        <th>建立時間</th>
-                        <th>操作</th>
+                        <th class="text-start">ID</th>
+                        <th class="text-start">圖片</th>
+                        <th class="text-start">名稱</th>
+                        <th class="text-start">合作商</th>
+                        <th class="text-start">地址</th>
+                        <th class="text-start">電話</th>
+                        <th class="text-start">建立時間</th>
+                        <th class="text-start">操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,6 +71,13 @@
                                 {% endif %}
                             </td>
                             <td>{{ store.name }}</td>
+                            <td>
+                                {% if store.partner %}
+                                    <span class="badge bg-info">{{ store.partner.name }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
                             <td>{{ store.address or '-' }}</td>
                             <td>{{ store.phone or '-' }}</td>
                             <td>{{ store.created_at.strftime('%Y/%m/%d') }}</td>
@@ -87,7 +95,7 @@
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="7" class="text-center text-muted">尚無資料</td>
+                            <td colspan="8" class="text-start text-muted">尚無資料</td>
                         </tr>
                     {% endif %}
                 </tbody>

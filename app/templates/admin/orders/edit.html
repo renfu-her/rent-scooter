@@ -1,6 +1,6 @@
 {% extends "admin/base.html" %}
 
-{% block admin_title %}新增訂單 - 管理後台{% endblock %}
+{% block admin_title %}編輯訂單 - 管理後台{% endblock %}
 
 {% block admin_extra_css %}
 <!-- Flatpickr CSS -->
@@ -56,7 +56,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="mb-0">新增訂單</h1>
+    <h1 class="mb-0">編輯訂單</h1>
     <a href="{{ url_for('admin_orders.index') }}" class="btn btn-link text-decoration-none">
         <i class="bi bi-arrow-left me-1"></i>返回
     </a>
@@ -71,14 +71,14 @@
                 <select class="form-select" id="partner_id" name="partner_id">
                     <option value="">選擇合作商</option>
                     {% for partner in partners %}
-                    <option value="{{ partner.id }}">{{ partner.name }}</option>
+                    <option value="{{ partner.id }}" {% if order.partner_id == partner.id %}selected{% endif %}>{{ partner.name }}</option>
                     {% endfor %}
                 </select>
             </div>
             
             <div class="col-md-6 mb-3">
                 <label for="renter_id" class="form-label">承租人（舊欄位，選填）</label>
-                <input type="text" class="form-control" id="renter_id" name="renter_id" placeholder="保留向後兼容">
+                <input type="text" class="form-control" id="renter_id" name="renter_id" value="{{ order.renter_id or '' }}" placeholder="保留向後兼容">
             </div>
         </div>
         
@@ -87,12 +87,13 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="renter_name" class="form-label">承租人姓名</label>
-                <input type="text" class="form-control" id="renter_name" name="renter_name" placeholder="請輸入姓名">
+                <input type="text" class="form-control" id="renter_name" name="renter_name" value="{{ order.renter_name or '' }}" placeholder="請輸入姓名">
             </div>
             
             <div class="col-md-6 mb-3">
                 <label for="renter_id_number" class="form-label">身份證號碼</label>
                 <input type="text" class="form-control" id="renter_id_number" name="renter_id_number" 
+                       value="{{ order.renter_id_number or '' }}"
                        placeholder="請輸入身份證號碼（例：A123456789）" 
                        maxlength="10"
                        style="text-transform: uppercase;"
@@ -104,11 +105,11 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">是否有駕照</label>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="has_license" id="has_license_yes" value="true">
+                    <input class="form-check-input" type="radio" name="has_license" id="has_license_yes" value="true" {% if order.has_license == True %}checked{% endif %}>
                     <label class="form-check-label" for="has_license_yes">有</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="has_license" id="has_license_no" value="false">
+                    <input class="form-check-input" type="radio" name="has_license" id="has_license_no" value="false" {% if order.has_license == False %}checked{% endif %}>
                     <label class="form-check-label" for="has_license_no">沒有</label>
                 </div>
             </div>
@@ -133,17 +134,23 @@
         <div class="row">
             <div class="col-md-4 mb-3">
                 <label for="reservation_date" class="form-label">預約日期 <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="reservation_date" name="reservation_date" placeholder="選擇日期" required>
+                <input type="text" class="form-control" id="reservation_date" name="reservation_date" 
+                       value="{{ order.reservation_date.strftime('%Y-%m-%d') if order.reservation_date else '' }}" 
+                       placeholder="選擇日期" required>
             </div>
             
             <div class="col-md-4 mb-3">
                 <label for="rental_start_time" class="form-label">租借開始時間</label>
-                <input type="text" class="form-control" id="rental_start_time" name="rental_start_time" placeholder="選擇日期時間">
+                <input type="text" class="form-control" id="rental_start_time" name="rental_start_time"
+                       value="{{ order.rental_start_time.strftime('%Y-%m-%d %H:%M') if order.rental_start_time else '' }}"
+                       placeholder="選擇日期時間">
             </div>
             
             <div class="col-md-4 mb-3">
                 <label for="rental_end_time" class="form-label">租借結束時間</label>
-                <input type="text" class="form-control" id="rental_end_time" name="rental_end_time" placeholder="選擇日期時間">
+                <input type="text" class="form-control" id="rental_end_time" name="rental_end_time"
+                       value="{{ order.rental_end_time.strftime('%Y-%m-%d %H:%M') if order.rental_end_time else '' }}"
+                       placeholder="選擇日期時間">
             </div>
         </div>
         
@@ -151,16 +158,17 @@
             <div class="col-md-6 mb-3">
                 <label for="status" class="form-label">狀態 <span class="text-danger">*</span></label>
                 <select class="form-select" id="status" name="status" required>
-                    <option value="待處理">待處理</option>
-                    <option value="進行中">進行中</option>
-                    <option value="已完成">已完成</option>
-                    <option value="已取消">已取消</option>
+                    <option value="待處理" {% if order.status == '待處理' %}selected{% endif %}>待處理</option>
+                    <option value="進行中" {% if order.status == '進行中' %}selected{% endif %}>進行中</option>
+                    <option value="已完成" {% if order.status == '已完成' %}selected{% endif %}>已完成</option>
+                    <option value="已取消" {% if order.status == '已取消' %}selected{% endif %}>已取消</option>
                 </select>
             </div>
             
             <div class="col-md-6 mb-3">
                 <label for="total_amount" class="form-label">總金額 <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="total_amount" name="total_amount" step="1" min="0" required>
+                <input type="number" class="form-control" id="total_amount" name="total_amount" 
+                       value="{{ order.total_amount | int if order.total_amount else 0 }}" step="1" min="0" required>
             </div>
         </div>
         
@@ -172,28 +180,32 @@
                 <label for="shipping_company" class="form-label">航運公司</label>
                 <select class="form-select" id="shipping_company" name="shipping_company">
                     <option value="">選擇航運公司</option>
-                    <option value="泰富">泰富</option>
-                    <option value="藍白">藍白</option>
-                    <option value="聯營">聯營</option>
-                    <option value="大福">大福</option>
+                    <option value="泰富" {% if order.shipping_company == '泰富' %}selected{% endif %}>泰富</option>
+                    <option value="藍白" {% if order.shipping_company == '藍白' %}selected{% endif %}>藍白</option>
+                    <option value="聯營" {% if order.shipping_company == '聯營' %}selected{% endif %}>聯營</option>
+                    <option value="大福" {% if order.shipping_company == '大福' %}selected{% endif %}>大福</option>
                 </select>
             </div>
             
             <div class="col-md-6 mb-3">
                 <label for="contact_phone" class="form-label">聯絡電話</label>
-                <input type="text" class="form-control" id="contact_phone" name="contact_phone">
+                <input type="text" class="form-control" id="contact_phone" name="contact_phone" value="{{ order.contact_phone or '' }}">
             </div>
         </div>
         
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="ferry_departure_time" class="form-label">船班出發時間</label>
-                <input type="text" class="form-control" id="ferry_departure_time" name="ferry_departure_time" placeholder="選擇日期時間">
+                <input type="text" class="form-control" id="ferry_departure_time" name="ferry_departure_time"
+                       value="{{ order.ferry_departure_time.strftime('%Y-%m-%d %H:%M') if order.ferry_departure_time else '' }}"
+                       placeholder="選擇日期時間">
             </div>
             
             <div class="col-md-6 mb-3">
                 <label for="ferry_return_time" class="form-label">船班回程時間</label>
-                <input type="text" class="form-control" id="ferry_return_time" name="ferry_return_time" placeholder="選擇日期時間">
+                <input type="text" class="form-control" id="ferry_return_time" name="ferry_return_time"
+                       value="{{ order.ferry_return_time.strftime('%Y-%m-%d %H:%M') if order.ferry_return_time else '' }}"
+                       placeholder="選擇日期時間">
             </div>
         </div>
         
@@ -202,21 +214,23 @@
                 <label for="payment_method" class="form-label">付款方式</label>
                 <select class="form-select" id="payment_method" name="payment_method">
                     <option value="">選擇付款方式</option>
-                    <option value="現金">現金</option>
-                    <option value="月結">月結</option>
-                    <option value="日結">日結</option>
+                    <option value="現金" {% if order.payment_method == '現金' %}selected{% endif %}>現金</option>
+                    <option value="月結" {% if order.payment_method == '月結' %}selected{% endif %}>月結</option>
+                    <option value="日結" {% if order.payment_method == '日結' %}selected{% endif %}>日結</option>
                 </select>
             </div>
             
             <div class="col-md-6 mb-3">
                 <label for="estimated_return_time" class="form-label">預計還車時間</label>
-                <input type="text" class="form-control" id="estimated_return_time" name="estimated_return_time" placeholder="選擇日期時間">
+                <input type="text" class="form-control" id="estimated_return_time" name="estimated_return_time"
+                       value="{{ order.estimated_return_time.strftime('%Y-%m-%d %H:%M') if order.estimated_return_time else '' }}"
+                       placeholder="選擇日期時間">
             </div>
         </div>
         
         <div class="mb-3">
             <label for="remarks" class="form-label">備註</label>
-            <textarea class="form-control" id="remarks" name="remarks" rows="3"></textarea>
+            <textarea class="form-control" id="remarks" name="remarks" rows="3">{{ order.remarks or '' }}</textarea>
         </div>
         
         <div class="d-flex gap-2">
@@ -237,17 +251,34 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
 <script>
-let selectedMotorcycles = [];
+let selectedMotorcycles = {{ selected_motorcycles | tojson }};
 let searchTimeout;
 
-// Initialize Flatpickr with Chinese locale
+// Initialize selected motorcycles on page load
 $(document).ready(function() {
+    updateSelectedMotorcycles();
+    
+    // Store default dates from server
+    var defaultDates = {
+        reservation_date: "{{ order.reservation_date.strftime('%Y-%m-%d') if order.reservation_date else '' }}",
+        rental_start_time: "{{ order.rental_start_time.strftime('%Y-%m-%d %H:%M') if order.rental_start_time else '' }}",
+        rental_end_time: "{{ order.rental_end_time.strftime('%Y-%m-%d %H:%M') if order.rental_end_time else '' }}",
+        ferry_departure_time: "{{ order.ferry_departure_time.strftime('%Y-%m-%d %H:%M') if order.ferry_departure_time else '' }}",
+        ferry_return_time: "{{ order.ferry_return_time.strftime('%Y-%m-%d %H:%M') if order.ferry_return_time else '' }}",
+        estimated_return_time: "{{ order.estimated_return_time.strftime('%Y-%m-%d %H:%M') if order.estimated_return_time else '' }}"
+    };
+    
+    // Initialize Flatpickr with Chinese locale
     // Date only picker for reservation_date
-    flatpickr("#reservation_date", {
+    var reservationDateOptions = {
         locale: "zh",
         dateFormat: "Y-m-d",
         allowInput: true
-    });
+    };
+    if (defaultDates.reservation_date) {
+        reservationDateOptions.defaultDate = defaultDates.reservation_date;
+    }
+    flatpickr("#reservation_date", reservationDateOptions);
     
     // DateTime pickers
     const datetimeOptions = {
@@ -258,11 +289,45 @@ $(document).ready(function() {
         allowInput: true
     };
     
-    flatpickr("#rental_start_time", datetimeOptions);
-    flatpickr("#rental_end_time", datetimeOptions);
-    flatpickr("#ferry_departure_time", datetimeOptions);
-    flatpickr("#ferry_return_time", datetimeOptions);
-    flatpickr("#estimated_return_time", datetimeOptions);
+    if (defaultDates.rental_start_time) {
+        flatpickr("#rental_start_time", Object.assign({}, datetimeOptions, {
+            defaultDate: defaultDates.rental_start_time
+        }));
+    } else {
+        flatpickr("#rental_start_time", datetimeOptions);
+    }
+    
+    if (defaultDates.rental_end_time) {
+        flatpickr("#rental_end_time", Object.assign({}, datetimeOptions, {
+            defaultDate: defaultDates.rental_end_time
+        }));
+    } else {
+        flatpickr("#rental_end_time", datetimeOptions);
+    }
+    
+    if (defaultDates.ferry_departure_time) {
+        flatpickr("#ferry_departure_time", Object.assign({}, datetimeOptions, {
+            defaultDate: defaultDates.ferry_departure_time
+        }));
+    } else {
+        flatpickr("#ferry_departure_time", datetimeOptions);
+    }
+    
+    if (defaultDates.ferry_return_time) {
+        flatpickr("#ferry_return_time", Object.assign({}, datetimeOptions, {
+            defaultDate: defaultDates.ferry_return_time
+        }));
+    } else {
+        flatpickr("#ferry_return_time", datetimeOptions);
+    }
+    
+    if (defaultDates.estimated_return_time) {
+        flatpickr("#estimated_return_time", Object.assign({}, datetimeOptions, {
+            defaultDate: defaultDates.estimated_return_time
+        }));
+    } else {
+        flatpickr("#estimated_return_time", datetimeOptions);
+    }
 });
 
 $('#motorcycle_search').on('input', function() {
@@ -362,3 +427,4 @@ $(document).on('click', function(e) {
 });
 </script>
 {% endblock %}
+

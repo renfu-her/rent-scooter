@@ -9,11 +9,13 @@ class Store(db.Model):
     name = db.Column(db.String(200), nullable=False)
     address = db.Column(db.String(500), nullable=True)
     phone = db.Column(db.String(20), nullable=True)
+    partner_id = db.Column(db.Integer, db.ForeignKey('partners.id'), nullable=True)
     image_path = db.Column(db.String(500), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     
     # Relationships
+    partner = db.relationship('Partner', backref='stores', lazy=True)
     motorcycles = db.relationship('Motorcycle', backref='store', lazy=True)
     
     def __repr__(self):

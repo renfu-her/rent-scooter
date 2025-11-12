@@ -67,8 +67,45 @@ body > footer {
     border-left-color: #3b82f6;
 }
 
+.sidebar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    text-align: left;
+}
+
 .sidebar-nav .nav-link i {
     width: 20px;
+    flex-shrink: 0;
+}
+
+/* 對於有下拉選單的項目，文字靠左，箭頭靠右 */
+.sidebar-nav .nav-link[data-bs-toggle="collapse"] {
+    justify-content: space-between;
+}
+
+.sidebar-nav .nav-link[data-bs-toggle="collapse"] > span {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    text-align: left;
+}
+
+.sidebar-nav .nav-link .bi-chevron-down {
+    transition: transform 0.3s;
+    font-size: 0.75rem;
+}
+
+.sidebar-nav .nav-link[aria-expanded="true"] .bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+.sidebar-nav .collapse .nav-link {
+    padding-left: 2.5rem;
+    font-size: 0.9rem;
+}
+
+.sidebar-nav .collapse .nav-link:hover {
+    background: rgba(255,255,255,0.08);
 }
 
 .sidebar-footer {
