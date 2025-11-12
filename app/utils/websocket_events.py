@@ -16,9 +16,10 @@ def register_websocket_events(socketio):
 
 
 def emit_motorcycle_status_change(license_plate, old_status, new_status):
-    """Emit motorcycle status change notification"""
+    """Emit motorcycle status change notification immediately after database commit"""
     try:
         from app import socketio
+        from flask import current_app
         
         # Determine action message
         if new_status == '出租中':
@@ -34,16 +35,24 @@ def emit_motorcycle_status_change(license_plate, old_status, new_status):
             message = f'車牌 {license_plate} 狀態已變更為 {new_status}'
             message_type = 'updated'
         
-        # Emit to all connected clients
+        # Emit to all connected clients immediately (non-blocking)
+        # Using namespace=None to broadcast to all namespaces
         socketio.emit('motorcycle_status_change', {
             'license_plate': license_plate,
             'old_status': old_status,
             'new_status': new_status,
             'message': message,
-            'type': message_type
-        }, broadcast=True)
+            'type': message_type,
+            'timestamp': None  # Can add timestamp if needed
+        }, broadcast=True, namespace=None)
+        
+        # Log for debugging (only in debug mode)
+        if current_app and current_app.debug:
+            current_app.logger.debug(f"WebSocket notification sent: {message}")
+            
     except Exception as e:
         # Log error but don't break the application
         import logging
-        logging.error(f"Failed to emit WebSocket notification: {str(e)}")
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to emit WebSocket notification for {license_plate}: {str(e)}", exc_info=True)
 

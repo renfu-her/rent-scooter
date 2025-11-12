@@ -55,8 +55,8 @@ class OrderController:
         db.session.flush()  # Get order ID
         
         # Add motorcycles
+        status_changes = []  # Track status changes to emit after commit
         if motorcycle_ids:
-            from app.utils.websocket_events import emit_motorcycle_status_change
             for motorcycle_id in motorcycle_ids:
                 order_motorcycle = OrderMotorcycle(
                     order_id=order.id,
@@ -68,11 +68,18 @@ class OrderController:
                 if motorcycle:
                     old_status = motorcycle.status
                     motorcycle.status = '出租中'
-                    # Emit WebSocket notification
+                    # Store status change to emit after commit
                     if old_status != '出租中':
-                        emit_motorcycle_status_change(motorcycle.license_plate, old_status, '出租中')
+                        status_changes.append((motorcycle.license_plate, old_status, '出租中'))
         
         db.session.commit()
+        
+        # Emit WebSocket notifications after successful commit
+        if status_changes:
+            from app.utils.websocket_events import emit_motorcycle_status_change
+            for license_plate, old_status, new_status in status_changes:
+                emit_motorcycle_status_change(license_plate, old_status, new_status)
+        
         return order
     
     @staticmethod
@@ -86,7 +93,7 @@ class OrderController:
                 setattr(order, key, value)
         
         # Handle motorcycle updates
-        from app.utils.websocket_events import emit_motorcycle_status_change
+        status_changes = []  # Track status changes to emit after commit
         if 'motorcycle_ids' in kwargs:
             # Remove old associations
             OrderMotorcycle.query.filter_by(order_id=order.id).delete()
@@ -102,9 +109,9 @@ class OrderController:
                 if motorcycle:
                     old_status = motorcycle.status
                     motorcycle.status = '出租中'
-                    # Emit WebSocket notification
+                    # Store status change to emit after commit
                     if old_status != '出租中':
-                        emit_motorcycle_status_change(motorcycle.license_plate, old_status, '出租中')
+                        status_changes.append((motorcycle.license_plate, old_status, '出租中'))
         
         # Auto-update motorcycle status based on order status
         if 'status' in kwargs:
@@ -115,9 +122,9 @@ class OrderController:
                     if motorcycle:
                         old_status = motorcycle.status
                         motorcycle.status = '待出租'
-                        # Emit WebSocket notification
+                        # Store status change to emit after commit
                         if old_status != '待出租':
-                            emit_motorcycle_status_change(motorcycle.license_plate, old_status, '待出租')
+                            status_changes.append((motorcycle.license_plate, old_status, '待出租'))
             elif kwargs['status'] == '進行中':
                 # Set motorcycles to rented
                 for om in order.motorcycles:
@@ -125,11 +132,18 @@ class OrderController:
                     if motorcycle:
                         old_status = motorcycle.status
                         motorcycle.status = '出租中'
-                        # Emit WebSocket notification
+                        # Store status change to emit after commit
                         if old_status != '出租中':
-                            emit_motorcycle_status_change(motorcycle.license_plate, old_status, '出租中')
+                            status_changes.append((motorcycle.license_plate, old_status, '出租中'))
         
         db.session.commit()
+        
+        # Emit WebSocket notifications after successful commit
+        if status_changes:
+            from app.utils.websocket_events import emit_motorcycle_status_change
+            for license_plate, old_status, new_status in status_changes:
+                emit_motorcycle_status_change(license_plate, old_status, new_status)
+        
         return order
     
     @staticmethod
