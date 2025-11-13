@@ -94,20 +94,20 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/backend.css') }}">
 <!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/2.3.4/dataTables.bootstrap5.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.bootstrap5.min.css">
 {% block admin_extra_css %}{% endblock %}
 {% endblock %}
 
 {% block extra_js %}
 <!-- Socket.IO Client -->
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js "></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/2.3.4/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/plug-ins/2.3.4/i18n/zh-HANT.json"></script>
+<!-- DataTables JS (Core) -->
+<script src="https://cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
+<!-- DataTables Bootstrap 5 Integration -->
+<script src="https://cdn.datatables.net/2.0.0/js/dataTables.bootstrap5.min.js"></script>
 <!-- Backend Common JS -->
-<script src="{{ url_for('static', filename='js/backend_common.js') }}?v={{ config.get('ASSET_VERSION', '1.0.1') }}"></script>
+<script src="{{ url_for('static', filename='js/backend_common.js') }}?v={{ config.get('ASSET_VERSION', '1.0.2') }}"></script>
 <!-- SocketIO Client JS -->
-<script src="{{ url_for('static', filename='js/socketio_client.js') }}?v={{ config.get('ASSET_VERSION', '1.0.1') }}"></script>
+<script src="{{ url_for('static', filename='js/socketio_client.js') }}?v={{ config.get('ASSET_VERSION', '1.0.2') }}"></script>
 {% block admin_extra_js %}{% endblock %}
 {% endblock %}
