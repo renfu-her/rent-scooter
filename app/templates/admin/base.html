@@ -90,6 +90,8 @@
 {% endblock %}
 
 {% block extra_css %}
+<!-- Global Styles -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/backend.css') }}">
 <!-- DataTables CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/2.3.4/dataTables.bootstrap5.css">
