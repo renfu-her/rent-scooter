@@ -70,10 +70,10 @@
                 {% if motorcycle.image_path %}
                 <div class="mt-2">
                     <p class="text-muted small mb-2">目前圖片:</p>
-                    <img src="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}" 
+                    <img src="/uploads/{{ motorcycle.image_path }}" 
                          alt="Current image" 
                          class="img-thumbnail motorcycle-image" 
-                         data-image-url="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}"
+                         data-image-url="/uploads/{{ motorcycle.image_path }}"
                          data-motorcycle-model="{{ motorcycle.model }}"
                          style="max-width: 200px; cursor: pointer;"
                          data-bs-toggle="modal" 

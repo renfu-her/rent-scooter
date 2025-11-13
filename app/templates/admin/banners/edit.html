@@ -58,7 +58,7 @@
                 {% if banner.image_path %}
                 <div class="mt-2">
                     <p class="text-muted mb-2">目前圖片:</p>
-                    <img src="{{ url_for('admin_banners.uploaded_file', filename=banner.image_path) }}" 
+                    <img src="/uploads/{{ banner.image_path }}" 
                          alt="Current image" 
                          class="img-thumbnail" 
                          style="max-width: 300px;">

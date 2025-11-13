@@ -10,7 +10,7 @@
         {% for banner in banners %}
         <div class="banner-slide {% if loop.first %}active{% endif %}">
             {% if banner.image_path %}
-            <img src="{{ url_for('admin_banners.uploaded_file', filename=banner.image_path) }}" 
+            <img src="/uploads/{{ banner.image_path }}" 
                  alt="{{ banner.title }}">
             {% endif %}
             <div class="banner-hero-overlay">
@@ -57,7 +57,7 @@
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100 shadow-sm">
                     {% if store.image_path %}
-                    <img src="{{ url_for('admin_stores.uploaded_file', filename=store.image_path) }}" 
+                    <img src="/uploads/{{ store.image_path }}" 
                          class="card-img-top store-card-image" 
                          alt="{{ store.name }}">
                     {% else %}

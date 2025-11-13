@@ -58,10 +58,10 @@
                             <td>{{ store.id }}</td>
                             <td>
                                 {% if store.image_path %}
-                                    <img src="{{ url_for('admin_stores.uploaded_file', filename=store.image_path) }}" 
+                                    <img src="/uploads/{{ store.image_path }}" 
                                          alt="{{ store.name }}" 
                                          class="img-thumbnail store-image" 
-                                         data-image-url="{{ url_for('admin_stores.uploaded_file', filename=store.image_path) }}"
+                                         data-image-url="/uploads/{{ store.image_path }}"
                                          data-store-name="{{ store.name }}"
                                          style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
                                          data-bs-toggle="modal" 

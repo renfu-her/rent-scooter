@@ -45,10 +45,10 @@
                 {% if store.image_path %}
                 <div class="mt-2">
                     <p class="text-muted mb-2">目前圖片:</p>
-                    <img src="{{ url_for('admin_stores.uploaded_file', filename=store.image_path) }}" 
+                    <img src="/uploads/{{ store.image_path }}" 
                          alt="Current image" 
                          class="img-thumbnail store-image" 
-                         data-image-url="{{ url_for('admin_stores.uploaded_file', filename=store.image_path) }}"
+                         data-image-url="/uploads/{{ store.image_path }}"
                          data-store-name="{{ store.name }}"
                          style="max-width: 300px; cursor: pointer;"
                          data-bs-toggle="modal" 

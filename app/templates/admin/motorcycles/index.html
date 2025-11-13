@@ -68,10 +68,10 @@
                             <td>{{ motorcycle.id }}</td>
                             <td>
                                 {% if motorcycle.image_path %}
-                                    <img src="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}" 
+                                    <img src="/uploads/{{ motorcycle.image_path }}" 
                                          alt="{{ motorcycle.model }}" 
                                          class="img-thumbnail motorcycle-image" 
-                                         data-image-url="{{ url_for('admin_motorcycles.uploaded_file', filename=motorcycle.image_path) }}"
+                                         data-image-url="/uploads/{{ motorcycle.image_path }}"
                                          data-motorcycle-model="{{ motorcycle.model }}"
                                          style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
                                          data-bs-toggle="modal" 
