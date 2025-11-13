@@ -2,8 +2,22 @@ from app import create_app, db
 from app.models.user import User
 import os
 import pymysql
+from urllib.parse import urlparse, unquote
 
 app = create_app()
+
+def parse_database_url(db_url):
+    """Parse DATABASE_URL to extract connection parameters."""
+    # Format: mysql+pymysql://user:password@host:port/database
+    parsed = urlparse(db_url)
+    
+    return {
+        'user': parsed.username or 'root',
+        'password': unquote(parsed.password) if parsed.password else '',
+        'host': parsed.hostname or 'localhost',
+        'port': parsed.port or 3306,
+        'database': parsed.path.lstrip('/') if parsed.path else None
+    }
 
 with app.app_context():
     # Create upload directories
@@ -16,11 +30,16 @@ with app.app_context():
     
     # Try to create database if it doesn't exist
     try:
+        # Parse DATABASE_URL to get connection parameters
+        db_url = app.config['SQLALCHEMY_DATABASE_URI']
+        db_params = parse_database_url(db_url)
+        
         # Connect to MySQL without specifying database
         connection = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='',
+            host=db_params['host'],
+            port=db_params['port'],
+            user=db_params['user'],
+            password=db_params['password'],
             charset='utf8mb4'
         )
         with connection.cursor() as cursor:
