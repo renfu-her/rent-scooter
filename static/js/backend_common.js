@@ -3,6 +3,58 @@
  * Handles sidebar toggle, DataTables initialization, and other common backend functionality
  */
 
+// Global function to initialize DataTables (must be defined immediately, outside IIFE)
+window.initializeDataTable = function(tableSelector) {
+    if (typeof $ === 'undefined' || typeof jQuery === 'undefined') {
+        console.warn('jQuery not loaded. Cannot initialize DataTables.');
+        return;
+    }
+    
+    if (typeof $.fn.DataTable === 'undefined') {
+        console.warn('DataTables library not loaded. Tables will not be initialized.');
+        return;
+    }
+    
+    var $table = $(tableSelector || '.data-table');
+    $table.each(function() {
+        if (!$.fn.DataTable.isDataTable(this)) {
+            var $t = $(this);
+            $t.find('th, td').addClass('text-start');
+            var $tbody = $t.find('tbody');
+            var headerCols = $t.find('thead th').length;
+            
+            // Remove empty data rows with colspan
+            $tbody.find('tr').each(function() {
+                var $row = $(this);
+                var $tds = $row.find('td');
+                if ($tds.length === 1 && $tds.first().attr('colspan')) {
+                    $row.remove();
+                }
+            });
+            
+            if (headerCols > 0) {
+                try {
+                    $t.DataTable({
+                        language: {
+                            url: 'https://cdn.datatables.net/plug-ins/2.3.4/i18n/zh-HANT.json',
+                            emptyTable: '尚無資料'
+                        },
+                        pageLength: 25,
+                        responsive: true,
+                        order: [],
+                        columnDefs: [
+                            { orderable: false, targets: -1 },
+                            { className: 'text-start', targets: '_all' }
+                        ]
+                    });
+                } catch (e) {
+                    console.error('DataTables initialization error:', e);
+                }
+            }
+        }
+    });
+};
+
 (function() {
     'use strict';
     
@@ -16,58 +68,6 @@
             }, 50);
         }
     }
-    
-    // Global function to initialize DataTables (for backward compatibility)
-    window.initializeDataTable = function(tableSelector) {
-        if (typeof $ === 'undefined' || typeof jQuery === 'undefined') {
-            console.warn('jQuery not loaded. Cannot initialize DataTables.');
-            return;
-        }
-        
-        if (typeof $.fn.DataTable === 'undefined') {
-            console.warn('DataTables library not loaded. Tables will not be initialized.');
-            return;
-        }
-        
-        var $table = $(tableSelector || '.data-table');
-        $table.each(function() {
-            if (!$.fn.DataTable.isDataTable(this)) {
-                var $t = $(this);
-                $t.find('th, td').addClass('text-start');
-                var $tbody = $t.find('tbody');
-                var headerCols = $t.find('thead th').length;
-                
-                // Remove empty data rows with colspan
-                $tbody.find('tr').each(function() {
-                    var $row = $(this);
-                    var $tds = $row.find('td');
-                    if ($tds.length === 1 && $tds.first().attr('colspan')) {
-                        $row.remove();
-                    }
-                });
-                
-                if (headerCols > 0) {
-                    try {
-                        $t.DataTable({
-                            language: {
-                                url: 'https://cdn.datatables.net/plug-ins/2.3.4/i18n/zh-HANT.json',
-                                emptyTable: '尚無資料'
-                            },
-                            pageLength: 25,
-                            responsive: true,
-                            order: [],
-                            columnDefs: [
-                                { orderable: false, targets: -1 },
-                                { className: 'text-start', targets: '_all' }
-                            ]
-                        });
-                    } catch (e) {
-                        console.error('DataTables initialization error:', e);
-                    }
-                }
-            }
-        });
-    };
     
     // Wait for jQuery and DOM to be ready
     waitForJQuery(function() {
