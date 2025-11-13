@@ -62,14 +62,21 @@
                 <div class="navbar-nav ms-auto">
                     {% if current_user.is_authenticated %}
                     <div class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle me-2"></i>
-                            <span>{{ current_user.username }}</span>
+                        <a class="nav-link dropdown-toggle d-flex align-items-center text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #212529 !important;">
+                            <i class="bi bi-person-circle me-2" style="font-size: 1.2rem;"></i>
+                            <span style="color: #212529 !important; font-weight: 500;">{{ current_user.username }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
-                                <i class="bi bi-box-arrow-right me-2"></i>登出
-                            </a></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('backend.profile') }}">
+                                    <i class="bi bi-person me-2"></i>個人資料管理
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>登出
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     {% else %}
@@ -91,8 +98,8 @@
 
 {% block extra_css %}
 <!-- Global Styles -->
-<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/backend.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v=1.0.3">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/backend.css') }}?v=1.0.3">
 <!-- DataTables CSS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.bootstrap5.min.css">
 {% block admin_extra_css %}{% endblock %}

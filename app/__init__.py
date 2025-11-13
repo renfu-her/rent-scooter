@@ -9,7 +9,7 @@ from app.models.user import User
 import os
 
 login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
+login_manager.login_view = 'backend.login'
 login_manager.login_message = '請先登入以繼續'
 login_manager.login_message_category = 'info'
 

@@ -35,11 +35,11 @@ def backend_login_required(f):
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
             flash('請先登入以繼續', 'warning')
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('backend.login'))
         # Check if session is backend type
         if session.get('login_type') != 'backend':
             flash('請使用後台登入', 'warning')
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('backend.login'))
         return f(*args, **kwargs)
     return decorated_function
 
