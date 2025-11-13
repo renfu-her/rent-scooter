@@ -106,8 +106,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/2.3.4/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/plug-ins/2.3.4/i18n/zh-HANT.json"></script>
 <!-- Backend Common JS -->
-<script src="{{ url_for('static', filename='js/backend_common.js') }}"></script>
+<script src="{{ url_for('static', filename='js/backend_common.js') }}?v={{ config.get('ASSET_VERSION', '1.0.1') }}"></script>
 <!-- SocketIO Client JS -->
-<script src="{{ url_for('static', filename='js/socketio_client.js') }}"></script>
+<script src="{{ url_for('static', filename='js/socketio_client.js') }}?v={{ config.get('ASSET_VERSION', '1.0.1') }}"></script>
 {% block admin_extra_js %}{% endblock %}
 {% endblock %}
