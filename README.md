@@ -24,8 +24,8 @@ rent-scooter/
 │   │   ├── api/        # REST API
 │   │   └── admin/       # 管理後台
 │   ├── utils/           # 工具函數
-│   ├── templates/       # Jinja2 模板
-│   └── static/          # 靜態檔案
+│   └── templates/       # Jinja2 模板
+├── static/              # 靜態檔案 (CSS, JS, images)
 ├── migrations/          # Alembic 遷移檔案
 ├── uploads/            # 上傳的圖片
 └── run.py              # 應用程式入口

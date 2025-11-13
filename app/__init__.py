@@ -6,6 +6,7 @@ from flask_compress import Compress
 from app.config import Config
 from app.models import db
 from app.models.user import User
+import os
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
@@ -23,7 +24,11 @@ def load_user(user_id):
 
 
 def create_app(config_class=Config):
-    app = Flask(__name__)
+    # Get the project root directory (parent of app directory)
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    static_folder = os.path.join(project_root, 'static')
+    
+    app = Flask(__name__, static_folder=static_folder)
     app.config.from_object(config_class)
     
     # Initialize extensions
