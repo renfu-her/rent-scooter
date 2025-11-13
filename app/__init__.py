@@ -77,5 +77,12 @@ def create_app(config_class=Config):
     from app.utils.websocket_events import register_websocket_events
     register_websocket_events(socketio)
     
+    # Register uploads route for serving uploaded files
+    from flask import send_from_directory
+    @app.route('/uploads/<path:filename>')
+    def uploaded_file(filename):
+        """Serve uploaded files from /uploads path"""
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    
     return app
 
